@@ -1,0 +1,223 @@
+/*
+Theme Name: Tijus Theme
+Theme URI: https://example.com/tijus-theme
+Author: Tijus
+Author URI: https://example.com
+Description: A custom WordPress theme automatically generated from the static Edule template. Fully compatible with Elementor page builder.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: tijus-theme
+Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
+*/
+
+/* Custom Elementor overrides if needed */
+body.elementor-page .elementor-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Navigation active indicator ───────────────────────────────────────────
+   The theme's JS adds .active to menu items, which can mark multiple items.
+   Disable the JS-driven active style and rely on WordPress's current-menu-item
+   class instead so only the current page shows the underline indicator.
+   ───────────────────────────────────────────────────────────────────────── */
+.header-menu ul li.active > a {
+    color: inherit;
+}
+.header-menu ul li.active > a:before {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Current page / ancestor: show the underline */
+.header-menu ul li.current-menu-item > a,
+.header-menu ul li.current-menu-ancestor > a,
+.header-menu ul li.current-page-ancestor > a {
+    color: var(--bs-primary);
+}
+.header-menu ul li.current-menu-item > a:before,
+.header-menu ul li.current-menu-ancestor > a:before,
+.header-menu ul li.current-page-ancestor > a:before {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* ── Blog Card Alignment Fixes ─────────────────────────────────────────── */
+.single-blog .blog-author .tag {
+    min-width: 0;           /* Allow flex item to shrink below content size */
+    max-width: 50%;         /* Ensure it leaves room for the author name */
+}
+.single-blog .blog-author .tag a {
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+/* ── Inner Page Meta & Share ───────────────────────────────────────────── */
+.blog-details-admin-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; 
+    gap: 15px;
+}
+.blog-details-admin-meta .blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px; /* Better spacing between date, heart, and tag */
+}
+.blog-details-admin-meta .blog-meta .tag {
+    margin-left: 0;
+}
+.blog-details-admin-meta .blog-meta .tag a,
+.single-blog .blog-author .tag a {
+    display: inline-block !important; /* Ensure block model applies */
+    width: auto !important;           /* Override fixed width constraints */
+    min-width: max-content;           /* Expands strictly to text length */
+    white-space: nowrap;
+    padding-left: 15px;               /* Keep comfortable pill padding */
+    padding-right: 15px;              /* Keep comfortable pill padding */
+    text-align: center;
+}
+.single-blog .blog-author .tag a {
+    min-width: 0;                     /* Let grid items truncate */
+    max-width: 100% !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.blog-details-label ul.social.small-social li a {
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 14px;
+}
+
+/* ── Course Category Filter Buttons ───────────────────────────────────────
+   Override fixed 160px width so multi-word names stay on one line.       */
+.courses-category-wrapper .category-menu li a {
+    width: auto !important;
+    white-space: nowrap !important;
+    padding: 0 22px !important;
+}
+
+/* ── Courses Mega-Menu Dropdown ────────────────────────────────────────── */
+.header-menu ul li.has-mega-menu {
+    position: relative;
+}
+.courses-mega-menu {
+    position: fixed;   /* JS sets top each open */
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.1);
+    padding: 30px 0;
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    border-top: 1px solid #f5f5f5;
+}
+@media only screen and (max-width: 991px) {
+    .courses-mega-menu {
+        display: none !important;
+    }
+}
+.courses-mega-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.courses-mega-inner {
+    display: flex !important;
+    flex-wrap: nowrap;
+    gap: 0;
+    align-items: stretch;
+}
+.courses-mega-col {
+    flex: 1;
+    padding: 0 35px;
+    border-right: 1px solid #f0f0f0;
+    min-width: 180px;
+}
+.courses-mega-col:last-child {
+    border-right: none;
+}
+.courses-mega-special {
+    background: #fafafa;
+}
+.courses-mega-heading {
+    font-size: 24px;
+    font-weight: 800;
+    color: #000;
+    margin: 0 0 15px;
+    line-height: 1.1;
+    border: none !important;
+    text-transform: none;
+}
+.courses-mega-heading a {
+    color: inherit !important;
+}
+.courses-mega-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.courses-mega-col ul li a {
+    display: block;
+    padding: 8px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    font-weight: 500;
+    transition: color 0.2s;
+    line-height: 1.3;
+}
+.courses-mega-col ul li a:hover {
+    color: var(--bs-primary);
+}
+
+/* Banner section on the right */
+.courses-mega-banner {
+    width: 300px;
+    min-width: 300px;
+    position: relative;
+    background: #1a1a2e;
+    overflow: hidden;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+}
+.courses-mega-banner img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.4;
+}
+.courses-mega-banner .banner-content {
+    position: relative;
+    z-index: 2;
+}
+.courses-mega-banner h3 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1;
+}
+.courses-mega-banner p {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(255,255,255,0.8);
+    margin: 0;
+}
