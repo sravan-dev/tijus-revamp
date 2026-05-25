@@ -5,36 +5,40 @@
  */
 
 function tijus_move_elementor_to_settings() {
-    // We use a high priority to ensure this runs after Elementor has registered its menus
+    global $menu;
     
     // Slugs
     $elementor_slug = 'elementor';
     $templates_slug = 'edit.php?post_type=elementor_library';
     $settings_slug  = 'options-general.php';
 
-    // 1. Move Elementor main menu
-    // We remove the top level page
-    remove_menu_page($elementor_slug);
+    // Aggressively find and remove any top-level menu that looks like Elementor
+    foreach ( $menu as $key => $item ) {
+        if ( isset( $item[0] ) && ( stripos( $item[0], 'Elementor' ) !== false || $item[2] === $elementor_slug ) ) {
+            unset( $menu[$key] );
+        }
+        if ( isset( $item[0] ) && ( stripos( $item[0], 'Templates' ) !== false || $item[2] === $templates_slug ) ) {
+             unset( $menu[$key] );
+        }
+    }
     
-    // Add it as a submenu under Settings
+    // Add them as submenus under Settings
     add_submenu_page(
         $settings_slug,
-        'Elementor',
+        'Elementor Settings',
         'Elementor',
         'manage_options',
-        $elementor_slug
+        'admin.php?page=elementor'
     );
 
-    // 2. Move Templates menu
-    remove_menu_page($templates_slug);
     add_submenu_page(
         $settings_slug,
-        'Templates',
+        'Elementor Templates',
         'Templates',
         'manage_options',
         $templates_slug
     );
 }
 
-// Priority 999 to run after plugin registrations
-add_action('admin_menu', 'tijus_move_elementor_to_settings', 999);
+// Use a very late priority
+add_action('admin_menu', 'tijus_move_elementor_to_settings', 9999);
