@@ -53,6 +53,24 @@
         $('#s2m-btn-upload').prop('disabled', false);
     }
 
+    // ── Auto-detect Current Database ──────────────────────────
+    $('#s2m-btn-detect').on('click', function () {
+        var $btn = $(this).prop('disabled', true);
+        setStatus('s2m-upload-status', 'is-info', '<span class="s2m-spinner"></span> Detecting database...');
+
+        $.post(S2M.ajax_url, { action: 's2m_detect', nonce: S2M.nonce })
+        .done(function (res) {
+            if (!res.success) {
+                setStatus('s2m-upload-status', 'is-error', '&#10007; ' + escHtml(res.data.message));
+                $btn.prop('disabled', false);
+                return;
+            }
+            setStatus('s2m-upload-status', 'is-success', '&#10003; ' + escHtml(res.data.message));
+            analyzeDatabase($btn);
+        })
+        .fail(ajaxFail.bind(null, 's2m-upload-status', $btn));
+    });
+
     // ── Upload & Analyze ──────────────────────────────────────
     $('#s2m-btn-upload').on('click', function () {
         if (!selectedFile) return;
@@ -79,27 +97,30 @@
                 return;
             }
             setStatus('s2m-upload-status', 'is-success', '&#10003; ' + escHtml(res.data.message));
-
-            // Now analyze
-            setStatus('s2m-upload-status', 'is-info',
-                '<span class="s2m-spinner"></span> ' + S2M.strings.analyzing);
-
-            $.post(S2M.ajax_url, { action: 's2m_analyze', nonce: S2M.nonce })
-            .done(function (r2) {
-                if (!r2.success) {
-                    setStatus('s2m-upload-status', 'is-error', '&#10007; ' + escHtml(r2.data.message));
-                    $btn.prop('disabled', false);
-                    return;
-                }
-                setStatus('s2m-upload-status', 'is-success',
-                    '&#10003; Found <strong>' + r2.data.tables.length + '</strong> table(s).');
-                renderTableList(r2.data.tables);
-                $('#s2m-step-2, #s2m-step-3').slideDown(300);
-            })
-            .fail(ajaxFail.bind(null, 's2m-upload-status', $btn));
+            analyzeDatabase($btn);
         })
         .fail(ajaxFail.bind(null, 's2m-upload-status', $btn));
     });
+
+    function analyzeDatabase($btn) {
+        // Now analyze
+        setStatus('s2m-upload-status', 'is-info',
+            '<span class="s2m-spinner"></span> ' + S2M.strings.analyzing);
+
+        $.post(S2M.ajax_url, { action: 's2m_analyze', nonce: S2M.nonce })
+        .done(function (r2) {
+            if (!r2.success) {
+                setStatus('s2m-upload-status', 'is-error', '&#10007; ' + escHtml(r2.data.message));
+                $btn.prop('disabled', false);
+                return;
+            }
+            setStatus('s2m-upload-status', 'is-success',
+                '&#10003; Found <strong>' + r2.data.tables.length + '</strong> table(s).');
+            renderTableList(r2.data.tables);
+            $('#s2m-step-2, #s2m-step-3').slideDown(300);
+        })
+        .fail(ajaxFail.bind(null, 's2m-upload-status', $btn));
+    }
 
     // ── Select all checkbox ───────────────────────────────────
     $(document).on('change', '#s2m-check-all', function () {

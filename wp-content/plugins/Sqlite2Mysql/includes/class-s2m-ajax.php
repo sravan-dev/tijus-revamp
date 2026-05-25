@@ -5,6 +5,7 @@ class S2M_Ajax {
 
     public function __construct() {
         add_action( 'wp_ajax_s2m_upload',   array( $this, 'handle_upload' ) );
+        add_action( 'wp_ajax_s2m_detect',   array( $this, 'handle_detect_current' ) );
         add_action( 'wp_ajax_s2m_analyze',  array( $this, 'handle_analyze' ) );
         add_action( 'wp_ajax_s2m_migrate',  array( $this, 'handle_migrate' ) );
         add_action( 'wp_ajax_s2m_clear_log', array( $this, 'handle_clear_log' ) );
@@ -60,6 +61,43 @@ class S2M_Ajax {
             'message'  => 'File uploaded: ' . esc_html( $filename ),
             'filename' => esc_html( $filename ),
             'size'     => size_format( $file['size'] ),
+        ) );
+    }
+
+    // ── Detect current SQLite database ──────────────────────────
+    public function handle_detect_current() {
+        $this->verify();
+
+        $possible_paths = array(
+            ABSPATH . 'wp-content/database/.ht.sqlite',
+            ABSPATH . 'wp-content/db.sqlite',
+        );
+
+        $detected = '';
+        foreach ( $possible_paths as $p ) {
+            if ( file_exists( $p ) && is_readable( $p ) ) {
+                $detected = $p;
+                break;
+            }
+        }
+
+        if ( ! $detected ) {
+            wp_send_json_error( array( 'message' => 'Could not auto-detect active SQLite database file.' ) );
+        }
+
+        $ext  = pathinfo( $detected, PATHINFO_EXTENSION ) ?: 'sqlite';
+        $dest = S2M_UPLOAD_DIR . 'detected_' . uniqid() . '.' . $ext;
+
+        if ( ! copy( $detected, $dest ) ) {
+            wp_send_json_error( array( 'message' => 'Found database but failed to copy for migration.' ) );
+        }
+
+        set_transient( 's2m_file_' . get_current_user_id(), $dest, 30 * MINUTE_IN_SECONDS );
+
+        wp_send_json_success( array(
+            'message'  => 'Successfully detected: ' . basename( $detected ),
+            'filename' => basename( $detected ),
+            'size'     => size_format( filesize( $dest ) ),
         ) );
     }
 

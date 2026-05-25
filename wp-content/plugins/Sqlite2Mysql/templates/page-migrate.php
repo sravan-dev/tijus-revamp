@@ -7,7 +7,18 @@
 
     <!-- Step 1: Upload -->
     <div class="s2m-card" id="s2m-step-1">
-        <h2><span class="s2m-step-num">1</span> <?php esc_html_e( 'Upload SQLite Database', 'sqlite2mysql' ); ?></h2>
+        <h2><span class="s2m-step-num">1</span> <?php esc_html_e( 'Select SQLite Database', 'sqlite2mysql' ); ?></h2>
+        
+        <div class="s2m-detection-area" style="margin-bottom: 25px; padding: 20px; background: #f0f6fb; border-radius: 8px; border-left: 4px solid #00a0e3;">
+            <p style="margin-top:0;"><strong><?php esc_html_e( 'Auto-detect active database:', 'sqlite2mysql' ); ?></strong></p>
+            <button class="button" id="s2m-btn-detect">
+                <span class="dashicons dashicons-search" style="vertical-align: middle; margin-top: -3px;"></span>
+                <?php esc_html_e( 'Detect Current Site Database', 'sqlite2mysql' ); ?>
+            </button>
+            <p class="description"><?php esc_html_e( 'Automatically find and use the SQLite file currently powering this WordPress site.', 'sqlite2mysql' ); ?></p>
+        </div>
+
+        <p class="description"><strong><?php esc_html_e( 'Or manually upload a file:', 'sqlite2mysql' ); ?></strong></p>
         <p class="description"><?php esc_html_e( 'Supported formats: .sqlite, .sqlite3, .db, .sdb. Max upload size: ', 'sqlite2mysql' ); ?><?php echo esc_html( size_format( wp_max_upload_size() ) ); ?></p>
 
         <div class="s2m-upload-area" id="s2m-drop-zone">
