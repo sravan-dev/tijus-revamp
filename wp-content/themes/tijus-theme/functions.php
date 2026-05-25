@@ -486,6 +486,20 @@ function tijus_register_courses_cpt() {
 
 	register_post_type( 'course', $args );
 
+	// Rename Excerpt to Summary globally
+	add_action( 'add_meta_boxes', function() {
+		global $wp_meta_boxes;
+		foreach ( $wp_meta_boxes as $post_type => $contexts ) {
+			foreach ( $contexts as $context => $priorities ) {
+				foreach ( $priorities as $priority => $boxes ) {
+					if ( isset( $boxes['postexcerpt'] ) ) {
+						$wp_meta_boxes[$post_type][$context][$priority]['postexcerpt']['title'] = 'Summary';
+					}
+				}
+			}
+		}
+	}, 100 );
+
 	// Register Course Category Taxonomy
 	register_taxonomy( 'course_category', [ 'course' ], [
 		'hierarchical'      => true,
