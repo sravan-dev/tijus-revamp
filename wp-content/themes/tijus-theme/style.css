@@ -135,7 +135,7 @@ body.elementor-page .elementor-section {
 }
 .courses-mega-inner {
     display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr 0.8fr 1.5fr;
+    grid-template-columns: 1fr 1fr 1fr 0.8fr 2fr;
     gap: 30px;
     align-items: start;
 }

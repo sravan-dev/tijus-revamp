@@ -202,7 +202,7 @@ function tijus_courses_mega_menu_inject( $item_output, $item, $depth, $args ) {
 		
 		// Column heading (Header)
 		if ( $is_media ) {
-			$mega .= '<h6 class="courses-mega-heading" style="font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; color: #212832;">Tiju\'s <br> Media <br> School</h6>';
+			$mega .= '<h6 class="courses-mega-heading" style="font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; color: #212832;">Tiju\'s Media School</h6>';
 		} else {
 			// Transparent header for others if we want to match the "no title" look in the image for columns 1-4
 			// Actually, the image doesn't show headers for the first 4 columns, just the list items.
