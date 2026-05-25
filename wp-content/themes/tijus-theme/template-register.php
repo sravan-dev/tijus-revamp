@@ -89,6 +89,23 @@ $theme_uri = get_template_directory_uri();
                                 <div class="single-form">
                                     <input type="password" name="reg_password_confirm" id="reg_password_confirm" placeholder="Confirm Password" required>
                                 </div>
+
+                                <?php
+                                $num1 = rand(1, 9);
+                                $num2 = rand(1, 9);
+                                if ( ! session_id() ) { @session_start(); }
+                                $_SESSION['tijus_captcha_ans'] = $num1 + $num2;
+                                ?>
+                                <div class="single-form">
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-5">
+                                            <label style="font-weight: 600; color: #212832; margin-bottom: 0;">What is <?php echo $num1; ?> + <?php echo $num2; ?>? *</label>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <input type="number" name="reg_captcha" placeholder="Answer" required>
+                                        </div>
+                                    </div>
+                                </div>
                                 
                                 <p id="tijus-register-message" style="display: none; margin-top: 15px; font-size: 14px;"></p>
 

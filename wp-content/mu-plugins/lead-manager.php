@@ -792,6 +792,15 @@ function tijus_ajax_register_handler() {
     $name = sanitize_text_field( $_POST['reg_name'] ?? '' );
     $email = sanitize_email( $_POST['reg_email'] ?? '' );
     $password = $_POST['reg_password'] ?? '';
+    $captcha = $_POST['reg_captcha'] ?? '';
+
+    // Verify Captcha
+    if ( ! session_id() ) { @session_start(); }
+    $expected = $_SESSION['tijus_captcha_ans'] ?? false;
+    if ( $expected === false || (int) $captcha !== (int) $expected ) {
+        wp_send_json_error( 'Incorrect captcha answer. Please try again.' );
+    }
+    unset( $_SESSION['tijus_captcha_ans'] ); // Clear after check
     
     if ( empty( $name ) || empty( $email ) || empty( $password ) ) {
         wp_send_json_error( 'Please fill in all required fields.' );
