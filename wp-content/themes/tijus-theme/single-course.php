@@ -250,7 +250,7 @@ while ( have_posts() ) :
 
                                             <!-- Tab FAQs Start -->
                                             <div class="tab-faqs">
-                                                <h3 class="tab-title">Frequently Asked Questions:</h3>
+                                                <h3 class="tab-title" style="margin-top: 30px;">Frequently Asked Questions:</h3>
                                                 <?php
                                                 $faqs = get_post_meta( get_the_ID(), '_course_faqs', true );
                                                 if ( is_array( $faqs ) && ! empty( $faqs ) ) {

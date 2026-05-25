@@ -173,12 +173,18 @@ function tijus_courses_mega_menu_inject( $item_output, $item, $depth, $args ) {
 	$mega .= '<div class="container">';
 	$mega .= '<div class="courses-mega-inner">';
 
-	foreach ( $categories as $cat ) {
+	// Define the order of categories as shown in the image
+	$cat_order = ['language-exams', 'healthcare-licensing', 'diploma-programs', 'wellness', 'tijus-media-school'];
+
+	foreach ( $cat_order as $slug ) {
+		$cat = get_term_by( 'slug', $slug, 'course_category' );
+		if ( ! $cat ) continue;
+
 		$courses = get_posts( [
 			'post_type'      => 'course',
 			'posts_per_page' => -1,
 			'post_status'    => 'publish',
-			'orderby'        => 'title',
+			'orderby'        => 'post_date', // Maintain creation order for simple sorting
 			'order'          => 'ASC',
 			'tax_query'      => [ [
 				'taxonomy' => 'course_category',
@@ -190,24 +196,25 @@ function tijus_courses_mega_menu_inject( $item_output, $item, $depth, $args ) {
 		if ( empty( $courses ) ) continue;
 
 		$cat_url = esc_url( add_query_arg( 'course_category', $cat->slug, $courses_page ) );
-		$is_media = ( stripos( $cat->name, 'media' ) !== false );
+		$is_media = ( $slug === 'tijus-media-school' );
 
 		$mega .= '<div class="courses-mega-col' . ( $is_media ? ' courses-mega-special' : '' ) . '">';
+		
+		// Column heading (Header)
 		if ( $is_media ) {
-			$mega .= '<h6 class="courses-mega-heading"><a href="' . $cat_url . '">' . esc_html( $cat->name ) . '</a></h6>';
+			$mega .= '<h6 class="courses-mega-heading" style="font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 20px; color: #212832;">Tiju\'s <br> Media <br> School</h6>';
+		} else {
+			// Transparent header for others if we want to match the "no title" look in the image for columns 1-4
+			// Actually, the image doesn't show headers for the first 4 columns, just the list items.
+			$mega .= '<div style="height: 60px;"></div>'; 
 		}
-		$mega .= '<ul>';
+
+		$mega .= '<ul style="list-style: none; padding: 0; margin: 0;">';
 		foreach ( $courses as $course ) {
-			$mega .= '<li><a href="' . esc_url( get_permalink( $course->ID ) ) . '">' . esc_html( $course->post_title ) . '</a></li>';
+			$mega .= '<li style="margin-bottom: 12px;"><a href="' . esc_url( get_permalink( $course->ID ) ) . '" style="color: #52565b; font-weight: 500; font-size: 16px; transition: 0.3s; display: block;">' . esc_html( $course->post_title ) . '</a></li>';
 		}
 		$mega .= '</ul></div>';
 	}
-
-	// Add the right-side banner image as seen in m1.png
-	$mega .= '<div class="courses-mega-banner">';
-	$mega .= '<img src="' . get_template_directory_uri() . '/assets/images/mega-banner.jpg" alt="Banner" onerror="this.style.display=\'none\'">';
-	$mega .= '<div class="banner-content"><h3>Tiju\'s <br> Academy</h3><p>Best <br> learning <br> platform</p></div>';
-	$mega .= '</div>';
 
 	$mega .= '</div></div></div>';
 
@@ -713,12 +720,12 @@ add_action( 'save_post_course', 'tijus_save_course_meta_data' );
 function tijus_create_dummy_courses_once() {
 	if ( ! get_option( 'tijus_dummy_courses_created_v1' ) ) {
 		$dummy_courses = [
-			[ 'title' => 'Data Science and Machine Learning with Python - Hands On!', 'secondary' => 'Ohula Malsh', 'progress' => '38', 'duration' => '08 hr 15 mins', 'lectures' => '29 Lectures', 'price' => '440.00', 'sale' => '385.00', 'rating' => '4.9' ],
-			[ 'title' => 'Create Amazing Color Schemes for Your UX Design Projects',  'secondary' => 'Ohula Malsh', 'progress' => '80', 'duration' => '05 hr 10 mins', 'lectures' => '15 Lectures', 'price' => '',       'sale' => '420.00', 'rating' => '4.9' ],
-			[ 'title' => 'Culture & Leadership: Strategies for a Successful Business', 'secondary' => 'Ohula Malsh', 'progress' => '15', 'duration' => '12 hr 30 mins', 'lectures' => '40 Lectures', 'price' => '340.00', 'sale' => '295.00', 'rating' => '4.9' ],
-			[ 'title' => 'Finance Series: Learn to Budget and Calculate your Net Worth', 'secondary' => 'Ohula Malsh', 'progress' => '45', 'duration' => '03 hr 45 mins', 'lectures' => '12 Lectures', 'price' => '',     'sale' => 'Free',   'rating' => '4.9' ],
-			[ 'title' => 'Build Brand Into Marketing: Tackling the New Marketing Landscape', 'secondary' => 'Ohula Malsh', 'progress' => '38', 'duration' => '09 hr 20 mins', 'lectures' => '35 Lectures', 'price' => '',   'sale' => '136.00', 'rating' => '4.9' ],
-			[ 'title' => 'Graphic Design: Illustrating Badges and Icons with Geometric Shapes', 'secondary' => 'Ohula Malsh', 'progress' => '0', 'duration' => '06 hr 50 mins', 'lectures' => '22 Lectures', 'price' => '', 'sale' => '237.00', 'rating' => '4.8' ]
+			[ 'title' => 'Data Science and Machine Learning with Python - Hands On!', 'secondary' => 'Ohula Malsh', 'progress' => '38', 'duration' => '08 hr 15 mins', 'lectures' => '29 Lectures', 'price' => '440.00', 'sale' => '385.00', 'rating' => '4.9', 'image' => 'courses-01.jpg' ],
+			[ 'title' => 'Create Amazing Color Schemes for Your UX Design Projects',  'secondary' => 'Ohula Malsh', 'progress' => '80', 'duration' => '05 hr 10 mins', 'lectures' => '15 Lectures', 'price' => '',       'sale' => '420.00', 'rating' => '4.9', 'image' => 'courses-02.jpg' ],
+			[ 'title' => 'Culture & Leadership: Strategies for a Successful Business', 'secondary' => 'Ohula Malsh', 'progress' => '15', 'duration' => '12 hr 30 mins', 'lectures' => '40 Lectures', 'price' => '340.00', 'sale' => '295.00', 'rating' => '4.9', 'image' => 'courses-03.jpg' ],
+			[ 'title' => 'Finance Series: Learn to Budget and Calculate your Net Worth', 'secondary' => 'Ohula Malsh', 'progress' => '45', 'duration' => '03 hr 45 mins', 'lectures' => '12 Lectures', 'price' => '',     'sale' => 'Free',   'rating' => '4.9', 'image' => 'courses-04.jpg' ],
+			[ 'title' => 'Build Brand Into Marketing: Tackling the New Marketing Landscape', 'secondary' => 'Ohula Malsh', 'progress' => '38', 'duration' => '09 hr 20 mins', 'lectures' => '35 Lectures', 'price' => '',   'sale' => '136.00', 'rating' => '4.9', 'image' => 'courses-05.jpg' ],
+			[ 'title' => 'Graphic Design: Illustrating Badges and Icons with Geometric Shapes', 'secondary' => 'Ohula Malsh', 'progress' => '0', 'duration' => '06 hr 50 mins', 'lectures' => '22 Lectures', 'price' => '', 'sale' => '237.00', 'rating' => '4.8', 'image' => 'courses-06.jpg' ]
 		];
 
 		foreach ( $dummy_courses as $item ) {
@@ -737,6 +744,8 @@ function tijus_create_dummy_courses_once() {
 				update_post_meta( $post_id, '_course_regular_price', $item['price'] );
 				update_post_meta( $post_id, '_course_sale_price', $item['sale'] );
 				update_post_meta( $post_id, '_course_rating', $item['rating'] );
+
+				update_post_meta( $post_id, '_course_thumbnail_url', '/wp-content/themes/tijus-theme/assets/images/courses/' . $item['image'] );
 			}
 		}
 		

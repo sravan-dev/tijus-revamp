@@ -11,6 +11,7 @@ $dummy_courses = [
         'regular_price' => '440.00',
         'sale_price' => '385.00',
         'rating' => '4.9',
+        'image' => 'courses-01.jpg'
     ],
     [
         'title' => 'Create Amazing Color Schemes for Your UX Design Projects',
@@ -21,6 +22,7 @@ $dummy_courses = [
         'regular_price' => '',
         'sale_price' => '420.00',
         'rating' => '4.9',
+        'image' => 'courses-02.jpg'
     ],
     [
         'title' => 'Culture & Leadership: Strategies for a Successful Business',
@@ -31,6 +33,7 @@ $dummy_courses = [
         'regular_price' => '340.00',
         'sale_price' => '295.00',
         'rating' => '4.9',
+        'image' => 'courses-03.jpg'
     ],
     [
         'title' => 'Finance Series: Learn to Budget and Calculate your Net Worth',
@@ -41,6 +44,7 @@ $dummy_courses = [
         'regular_price' => '',
         'sale_price' => 'Free',
         'rating' => '4.9',
+        'image' => 'courses-04.jpg'
     ],
     [
         'title' => 'Build Brand Into Marketing: Tackling the New Marketing Landscape',
@@ -51,6 +55,7 @@ $dummy_courses = [
         'regular_price' => '',
         'sale_price' => '136.00',
         'rating' => '4.9',
+        'image' => 'courses-05.jpg'
     ],
     [
         'title' => 'Graphic Design: Illustrating Badges and Icons with Geometric Shapes',
@@ -61,6 +66,7 @@ $dummy_courses = [
         'regular_price' => '',
         'sale_price' => '237.00',
         'rating' => '4.8',
+        'image' => 'courses-06.jpg'
     ],
 ];
 
@@ -83,6 +89,10 @@ foreach ($dummy_courses as $item) {
         update_post_meta($post_id, '_course_regular_price', $item['regular_price']);
         update_post_meta($post_id, '_course_sale_price', $item['sale_price']);
         update_post_meta($post_id, '_course_rating', $item['rating']);
+        
+        // Add course thumbnail URL using root-relative path
+        update_post_meta($post_id, '_course_thumbnail_url', '/wp-content/themes/tijus-theme/assets/images/courses/' . $item['image']);
+
         echo "Created course: {$item['title']}\n";
     }
 }

@@ -53,10 +53,30 @@ get_header();
     <div class="container">
 
         <!-- Courses Category Wrapper Start  -->
-        <div class="courses-category-wrapper">
-            <form id="tijus-courses-filter-form" action="<?php echo esc_url( get_permalink() ); ?>" method="get" style="display:flex;">
-                <div class="courses-search search-2">
-                    <input type="text" name="course_search" placeholder="Search here" value="<?php echo isset($_GET['course_search']) ? esc_attr($_GET['course_search']) : ''; ?>">
+        <div class="courses-category-wrapper m1-style-wrapper">
+            <ul class="category-menu" id="tijus-courses-category-menu">
+                <?php
+                $current_cat = isset( $_GET['course_category'] ) ? sanitize_text_field( $_GET['course_category'] ) : '';
+                ?>
+                <li><a class="<?php echo empty( $current_cat ) ? 'active' : ''; ?>" href="<?php echo esc_url( get_permalink() ); ?>">All Courses</a></li>
+                <?php
+                // Get categories in the same order as the mega menu
+                $cat_slugs = ['language-exams', 'healthcare-licensing', 'diploma-programs', 'wellness', 'tijus-media-school'];
+                
+                foreach ( $cat_slugs as $slug ) {
+                    $category = get_term_by( 'slug', $slug, 'course_category' );
+                    if ( $category && ! is_wp_error( $category ) ) {
+                        $is_active = ( $current_cat === $category->slug ) ? 'active' : '';
+                        $cat_url = add_query_arg( 'course_category', $category->slug, get_permalink() );
+                        echo '<li><a class="' . esc_attr( $is_active ) . '" href="' . esc_url( $cat_url ) . '">' . esc_html( $category->name ) . '</a></li>';
+                    }
+                }
+                ?>
+            </ul>
+
+            <form id="tijus-courses-filter-form" action="<?php echo esc_url( get_permalink() ); ?>" method="get">
+                <div class="courses-search search-2 m1-search-style">
+                    <input type="text" name="course_search" placeholder="" value="<?php echo isset($_GET['course_search']) ? esc_attr($_GET['course_search']) : ''; ?>">
                     <button type="submit"><i class="icofont-search"></i></button>
                     <!-- Preserve category if currently filtering -->
                     <?php if ( isset($_GET['course_category']) ) : ?>
@@ -64,35 +84,6 @@ get_header();
                     <?php endif; ?>
                 </div>
             </form>
-
-            <ul class="category-menu" id="tijus-courses-category-menu">
-                <?php
-                $current_cat = isset( $_GET['course_category'] ) ? sanitize_text_field( $_GET['course_category'] ) : '';
-                ?>
-                <li><a class="<?php echo empty( $current_cat ) ? 'active' : ''; ?>" href="<?php echo esc_url( get_permalink() ); ?>">All Courses</a></li>
-                <?php
-                $categories = get_terms( [
-                    'taxonomy'   => 'course_category',
-                    'hide_empty' => false,
-                ] );
-                
-                if ( ! is_wp_error( $categories ) && ! empty( $categories ) ) {
-                    foreach ( $categories as $category ) {
-                        $is_active = ( $current_cat === $category->slug ) ? 'active' : '';
-                        $cat_url = add_query_arg( 'course_category', $category->slug, get_permalink() );
-                        echo '<li><a class="' . esc_attr( $is_active ) . '" href="' . esc_url( $cat_url ) . '">' . esc_html( $category->name ) . '</a></li>';
-                    }
-                } else {
-                    // Fallback to static mockup items if no categories are manually created yet
-                    $mockup_cats = [ 'collections' => 'Collections', 'wishlist' => 'Wishlist', 'archived' => 'Archived' ];
-                    foreach ( $mockup_cats as $slug => $label ) {
-                        $is_active = ( $current_cat === $slug ) ? 'active' : '';
-                        $cat_url = add_query_arg( 'course_category', $slug, get_permalink() );
-                        echo '<li><a class="' . esc_attr( $is_active ) . '" href="' . esc_url( $cat_url ) . '">' . esc_html( $label ) . '</a></li>';
-                    }
-                }
-                ?>
-            </ul>
         </div>
         <!-- Courses Category Wrapper End  -->
 

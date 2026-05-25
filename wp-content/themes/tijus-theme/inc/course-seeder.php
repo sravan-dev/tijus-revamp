@@ -56,6 +56,7 @@ function tijus_course_seeder_handle() {
         'healthcare-licensing' => 'Healthcare Licensing',
         'diploma-programs'     => 'Diploma Programs',
         'wellness'             => 'Wellness',
+        'tijus-media-school'   => 'Tiju\'s Media School',
     ];
     $cat_ids = [];
     foreach ( $cats as $slug => $name ) {
@@ -64,24 +65,36 @@ function tijus_course_seeder_handle() {
     }
 
     // Courses: [ title, category_slug, theme_image_number (1-6) ]
-    // Using theme's own safe images only — no external services
     $courses = [
+        // Column 1
         [ 'OET',                                     'language-exams',       1 ],
         [ 'CBT',                                     'language-exams',       2 ],
         [ 'IELTS',                                   'language-exams',       3 ],
         [ 'PTE',                                     'language-exams',       4 ],
         [ 'German',                                  'language-exams',       5 ],
+        
+        // Column 2
         [ 'Prometic',                                'healthcare-licensing', 6 ],
         [ 'DHA',                                     'healthcare-licensing', 1 ],
         [ 'MOH',                                     'healthcare-licensing', 2 ],
         [ 'HAAD',                                    'healthcare-licensing', 3 ],
         [ 'NCLEX-Rn',                                'healthcare-licensing', 4 ],
+        
+        // Column 3
         [ 'Diploma in Airline & Airport Management', 'diploma-programs',     5 ],
         [ 'Diploma in Logistics',                    'diploma-programs',     6 ],
         [ 'Diploma in Data Analytics',               'diploma-programs',     1 ],
         [ 'Digital Marketing',                       'diploma-programs',     2 ],
+        
+        // Column 4
         [ 'Yoga',                                    'wellness',             3 ],
         [ 'Zumba',                                   'wellness',             4 ],
+
+        // Column 5
+        [ 'Diploma in script writing and direction',          'tijus-media-school', 1 ],
+        [ 'Diploma in cinematography and still photography', 'tijus-media-school', 2 ],
+        [ 'Diploma in editing and color grading',            'tijus-media-school', 3 ],
+        [ 'Diploma in vfx and motion graphics',              'tijus-media-school', 4 ],
     ];
 
     $base = get_template_directory_uri() . '/assets/images/courses/';

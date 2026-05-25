@@ -1,0 +1,263 @@
+/* =============================================
+   Sqlite2Mysql — Admin Styles
+   ============================================= */
+
+.s2m-wrap {
+    max-width: 1100px;
+}
+
+.s2m-page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+}
+
+.s2m-page-title .dashicons {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    color: #2271b1;
+}
+
+/* ── Cards ──────────────────────────────────── */
+.s2m-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+.s2m-card h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Stat cards ─────────────────────────────── */
+.s2m-cards {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+}
+
+.s2m-stat-card {
+    flex: 1;
+    min-width: 160px;
+    text-align: center;
+    padding: 24px 16px;
+}
+
+.s2m-stat-number {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #2271b1;
+    line-height: 1;
+}
+
+.s2m-stat-label {
+    margin-top: 6px;
+    color: #666;
+    font-size: .9rem;
+}
+
+/* ── Actions card ───────────────────────────── */
+.s2m-actions-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.s2m-actions-card .button-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: max-content;
+}
+
+/* ── Step indicator ─────────────────────────── */
+.s2m-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #2271b1;
+    color: #fff;
+    border-radius: 50%;
+    font-size: .9rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ── Upload area ────────────────────────────── */
+.s2m-upload-area {
+    border: 2px dashed #c3c4c7;
+    border-radius: 6px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    margin: 16px 0;
+}
+
+.s2m-upload-area:hover,
+.s2m-upload-area.drag-over {
+    border-color: #2271b1;
+    background: #f0f6fc;
+}
+
+.s2m-drop-icon {
+    font-size: 3rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    color: #2271b1;
+    margin-bottom: 10px;
+}
+
+.s2m-upload-area p {
+    margin: 8px 0;
+    color: #666;
+}
+
+/* ── Status box ─────────────────────────────── */
+.s2m-status-box {
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin: 12px 0;
+    font-size: .9rem;
+}
+
+.s2m-status-box.is-info    { background: #e8f4fd; border-left: 4px solid #2271b1; }
+.s2m-status-box.is-success { background: #edfaef; border-left: 4px solid #00a32a; }
+.s2m-status-box.is-error   { background: #fce8e8; border-left: 4px solid #b32d2e; }
+
+/* ── Table toolbar ──────────────────────────── */
+.s2m-table-toolbar {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* ── Progress bar ───────────────────────────── */
+.s2m-progress-wrap {
+    margin-top: 10px;
+}
+
+.s2m-progress-bar {
+    height: 22px;
+    background: #e0e0e0;
+    border-radius: 11px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.s2m-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2271b1, #33a6d4);
+    border-radius: 11px;
+    transition: width .4s ease;
+}
+
+.s2m-progress-label {
+    color: #555;
+    font-size: .9rem;
+}
+
+/* ── Result card ────────────────────────────── */
+.s2m-result-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+}
+
+.s2m-result-stat {
+    background: #f6f7f7;
+    border-radius: 4px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 100px;
+}
+
+.s2m-result-stat .num {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2271b1;
+    line-height: 1;
+}
+
+.s2m-result-stat .lbl {
+    font-size: .8rem;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* ── Badges ─────────────────────────────────── */
+.s2m-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.s2m-badge-ok      { background: #edfaef; color: #00730f; }
+.s2m-badge-warning { background: #fff8e5; color: #996800; }
+.s2m-badge-error   { background: #fce8e8; color: #b32d2e; }
+
+/* ── Inline notice ──────────────────────────── */
+.s2m-notice-error {
+    color: #b32d2e;
+    font-size: .85rem;
+    padding: 2px 0;
+}
+
+.s2m-notice-warning {
+    color: #996800;
+    font-size: .85rem;
+    padding: 2px 0;
+}
+
+/* ── OK / Fail indicators ───────────────────── */
+.s2m-ok   { color: #00730f; font-weight: 600; }
+.s2m-fail { color: #b32d2e; font-weight: 600; }
+
+/* ── History table ──────────────────────────── */
+.s2m-history-table .s2m-history-details td {
+    background: #fafafa;
+    padding-top: 0;
+}
+
+/* ── Migrate actions ────────────────────────── */
+.s2m-migrate-actions {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+/* ── Spinner ────────────────────────────────── */
+.s2m-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: s2m-spin .7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes s2m-spin {
+    to { transform: rotate(360deg); }
+}

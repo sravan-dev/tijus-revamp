@@ -1,0 +1,20 @@
+# WordPress Default
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/cache/
+*.log
+.htaccess
+
+# OS/IDE Files
+.DS_Store
+.vscode/
+.idea/
+
+# Local Dev SSL
+key.pem
+cert.pem
+
+# SQLite Database
+wp-content/database/*.sqlite
