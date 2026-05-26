@@ -190,6 +190,15 @@ function tijus_dashboard_widget_full_width() {
         #wpbody-content #dashboard-widgets.columns-2 .postbox-container,
         #wpbody-content #dashboard-widgets.columns-3 .postbox-container,
         #wpbody-content #dashboard-widgets.columns-4 .postbox-container { width: 100% !important; }
+
+        /* User requested heading styles */
+        #dashboard-widgets h3, #dashboard-widgets h4, #dashboard_quick_press .drafts h2 {
+            margin: 0 12px 8px;
+            padding: 0;
+            font-size: 46px;
+            font-weight: 400;
+            color: #1d2327;
+        }
     </style>
     <?php
 }
