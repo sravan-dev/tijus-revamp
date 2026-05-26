@@ -101,12 +101,13 @@ function tijus_render_dashboard_stats_widget() {
         }
         .tijus-stat-card .inner { padding: 20px; z-index: 2; }
         .tijus-stat-card h3 {
-            font-size: 38px;
-            font-weight: 700;
+            font-size: 44px;
+            font-weight: 800;
             margin: 0 0 10px 0;
             white-space: nowrap;
             padding: 0;
             color: inherit;
+            line-height: 1;
         }
         .tijus-stat-card p {
             font-size: 16px;
