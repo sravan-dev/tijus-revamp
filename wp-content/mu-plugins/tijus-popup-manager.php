@@ -183,60 +183,95 @@ function tijus_inject_popup() {
         .tijus-popup-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.75);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 999999;
-            backdrop-filter: blur(4px);
+            z-index: 99999999;
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            box-sizing: border-box;
         }
         .tijus-popup-content {
             background: #fff;
-            max-width: 600px;
-            width: 90%;
-            border-radius: 20px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 90vh;
+            border-radius: 24px;
             position: relative;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            animation: tijusPopupIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3);
+            animation: tijusPopupIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         @keyframes tijusPopupIn {
-            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            from { opacity: 0; transform: scale(0.95) translateY(30px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
         .tijus-popup-close {
             position: absolute;
-            top: 20px; right: 20px;
-            font-size: 24px;
+            top: 15px; right: 20px;
+            font-size: 32px;
             cursor: pointer;
-            color: #999;
-            transition: color 0.2s;
+            color: #000;
+            transition: all 0.2s;
             line-height: 1;
+            z-index: 10;
+            background: #fff;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .tijus-popup-close:hover { color: #333; }
+        .tijus-popup-close:hover { transform: rotate(90deg); background: #f0f0f0; }
+        
+        .tijus-popup-inner {
+            padding: 40px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #FFC988 #f0f0f0;
+        }
+        .tijus-popup-inner::-webkit-scrollbar { width: 6px; }
+        .tijus-popup-inner::-webkit-scrollbar-track { background: #f0f0f0; }
+        .tijus-popup-inner::-webkit-scrollbar-thumb { background: #FFC988; border-radius: 10px; }
+
         .tijus-popup-image {
             width: 100%;
             height: auto;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: block;
         }
         .tijus-popup-body {
-            font-family: inherit;
-            color: #444;
-            line-height: 1.6;
+            font-family: "Montserrat", sans-serif;
+            color: #333;
+            line-height: 1.7;
         }
-        .tijus-popup-body h2 { margin-top: 0; font-weight: 800; }
+        .tijus-popup-body h2 { 
+            margin-top: 0; 
+            font-weight: 800; 
+            font-size: 28px; 
+            color: #000;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
     </style>
 
     <div class="tijus-popup-overlay" id="tijusPopup">
         <div class="tijus-popup-content">
             <span class="tijus-popup-close" id="tijusPopupClose">&times;</span>
-            <?php if ( $thumb ) : ?>
-                <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
-            <?php endif; ?>
-            <div class="tijus-popup-body">
-                <h2><?php echo esc_html( $popup->post_title ); ?></h2>
-                <?php echo $content; ?>
+            <div class="tijus-popup-inner">
+                <?php if ( $thumb ) : ?>
+                    <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
+                <?php endif; ?>
+                <div class="tijus-popup-body">
+                    <h2><?php echo esc_html( $popup->post_title ); ?></h2>
+                    <?php echo $content; ?>
+                </div>
             </div>
         </div>
     </div>
