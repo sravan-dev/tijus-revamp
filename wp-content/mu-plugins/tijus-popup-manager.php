@@ -233,7 +233,14 @@ function tijus_inject_popup() {
 
     if ( ! $should_show ) return;
 
+    // Set up global $post so content filters use popup data, not the current page
+    global $post;
+    $original_post = $post;
+    $post = $popup;
+    setup_postdata( $post );
     $content = apply_filters( 'the_content', $popup->post_content );
+    $post = $original_post;
+    wp_reset_postdata();
 
     ?>
     <style>
