@@ -33,7 +33,7 @@ function tijus_register_popup_cpt() {
         'public'              => false,
         'show_ui'             => true,
         'show_in_menu'        => true,
-        'menu_position'       => 25,
+        'menu_position'       => 6,
         'menu_icon'           => 'dashicons-megaphone',
         'supports'            => array( 'title', 'editor', 'thumbnail' ),
         'has_archive'         => false,
