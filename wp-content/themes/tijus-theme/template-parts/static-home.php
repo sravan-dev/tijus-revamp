@@ -153,6 +153,8 @@
                                     $args = [
                                         'post_type'      => 'course',
                                         'posts_per_page' => 6,
+                                        'orderby'        => 'menu_order',
+                                        'order'          => 'ASC',
                                     ];
                                     
                                     if ( $has_real_terms ) {

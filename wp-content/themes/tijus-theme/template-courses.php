@@ -97,6 +97,8 @@ get_header();
                 'post_type'      => 'course',
                 'posts_per_page' => 12,
                 'paged'          => $paged,
+                'orderby'        => 'menu_order',
+                'order'          => 'ASC',
             ];
 
             if ( ! empty( $current_cat ) ) {
