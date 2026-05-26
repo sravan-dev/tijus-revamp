@@ -84,7 +84,7 @@
 
                     <!-- Section Title Start -->
                     <div class="section-title shape-01">
-                        <h2 class="main-title">All <span>Courses</span> of Edule</h2>
+                        <h2 class="main-title">All <span>Courses</span></h2>
                     </div>
                     <!-- Section Title End -->
 
