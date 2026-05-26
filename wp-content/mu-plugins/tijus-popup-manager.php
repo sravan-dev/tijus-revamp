@@ -69,6 +69,7 @@ function tijus_render_popup_settings_meta_box( $post ) {
     $specific_ids = get_post_meta( $post->ID, '_popup_specific_page_ids', true );
     $delay        = get_post_meta( $post->ID, '_popup_delay', true );
     $popup_img    = get_post_meta( $post->ID, '_popup_image_url', true );
+    $cta_enabled  = get_post_meta( $post->ID, '_popup_cta_enabled', true );
     $cta_text     = get_post_meta( $post->ID, '_popup_cta_text', true );
     $cta_url      = get_post_meta( $post->ID, '_popup_cta_url', true );
 
@@ -94,13 +95,22 @@ function tijus_render_popup_settings_meta_box( $post ) {
             </td>
         </tr>
         <tr>
+            <th><label>CTA Button</label></th>
+            <td>
+                <label>
+                    <input type="checkbox" name="popup_cta_enabled" id="popup_cta_enabled" value="1" <?php checked( $cta_enabled, '1' ); ?> />
+                    Enable CTA button in popup footer
+                </label>
+            </td>
+        </tr>
+        <tr class="cta-settings-row" style="<?php echo ( $cta_enabled === '1' ) ? '' : 'display:none;'; ?>">
             <th><label for="popup_cta_text">CTA Button Text</label></th>
             <td>
                 <input type="text" name="popup_cta_text" id="popup_cta_text" value="<?php echo esc_attr( $cta_text ); ?>" class="regular-text" placeholder="e.g. Enroll Now" />
                 <p class="description">Text for the call-to-action button in the popup footer.</p>
             </td>
         </tr>
-        <tr>
+        <tr class="cta-settings-row" style="<?php echo ( $cta_enabled === '1' ) ? '' : 'display:none;'; ?>">
             <th><label for="popup_cta_url">CTA Button URL</label></th>
             <td>
                 <input type="url" name="popup_cta_url" id="popup_cta_url" value="<?php echo esc_attr( $cta_url ); ?>" class="regular-text" placeholder="https://example.com/page" />
@@ -150,6 +160,13 @@ function tijus_render_popup_settings_meta_box( $post ) {
             document.getElementById('specific_pages_row').style.display = (this.value === 'specific') ? '' : 'none';
         });
 
+        document.getElementById('popup_cta_enabled').addEventListener('change', function() {
+            var rows = document.querySelectorAll('.cta-settings-row');
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].style.display = this.checked ? '' : 'none';
+            }
+        });
+
         // Media Uploader Script
         jQuery(document).ready(function($){
             var mediaUploader;
@@ -197,6 +214,7 @@ function tijus_save_popup_meta( $post_id ) {
     $specific_ids = sanitize_text_field( $_POST['popup_specific_page_ids'] );
     $delay        = absint( $_POST['popup_delay'] );
     $image_url    = sanitize_text_field( $_POST['popup_image_url'] );
+    $cta_enabled  = isset( $_POST['popup_cta_enabled'] ) ? '1' : '0';
     $cta_text     = sanitize_text_field( $_POST['popup_cta_text'] );
     $cta_url      = esc_url_raw( $_POST['popup_cta_url'] );
 
@@ -206,6 +224,7 @@ function tijus_save_popup_meta( $post_id ) {
     update_post_meta( $post_id, '_popup_specific_page_ids', $specific_ids );
     update_post_meta( $post_id, '_popup_delay', $delay );
     update_post_meta( $post_id, '_popup_image_url', $image_url );
+    update_post_meta( $post_id, '_popup_cta_enabled', $cta_enabled );
     update_post_meta( $post_id, '_popup_cta_text', $cta_text );
     update_post_meta( $post_id, '_popup_cta_url', $cta_url );
 }
@@ -276,6 +295,7 @@ function tijus_inject_popup() {
     $specific_ids = get_post_meta( $popup->ID, '_popup_specific_page_ids', true );
     $delay        = get_post_meta( $popup->ID, '_popup_delay', true );
     $popup_img    = get_post_meta( $popup->ID, '_popup_image_url', true );
+    $cta_enabled  = get_post_meta( $popup->ID, '_popup_cta_enabled', true );
     $cta_text     = get_post_meta( $popup->ID, '_popup_cta_text', true );
     $cta_url      = get_post_meta( $popup->ID, '_popup_cta_url', true );
 
@@ -543,6 +563,7 @@ function tijus_inject_popup() {
                     </div>
                 </div>
             </div>
+            <?php if ( $cta_enabled === '1' ) : ?>
             <div class="tijus-popup-footer">
                 <?php if ( ! empty( $cta_url ) ) : ?>
                     <a href="<?php echo esc_url( $cta_url ); ?>" class="tijus-popup-cta" target="_blank"><?php echo esc_html( $cta_text ); ?></a>
@@ -550,6 +571,7 @@ function tijus_inject_popup() {
                     <a href="#" class="tijus-popup-cta" id="tijusPopupCtaBtn"><?php echo esc_html( $cta_text ); ?></a>
                 <?php endif; ?>
             </div>
+            <?php endif; ?>
         </div>
     </div>
 
