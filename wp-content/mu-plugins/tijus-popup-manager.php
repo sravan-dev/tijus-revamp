@@ -3,7 +3,7 @@
 Plugin Name: Tijus Popup Manager
 Description: Create and manage promotional popups with page targeting and trigger time options.
 Author: Gemini CLI
-Version: 1.0
+Version: 1.2
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -33,10 +33,12 @@ function tijus_register_popup_cpt() {
         'public'              => false,
         'show_ui'             => true,
         'show_in_menu'        => true,
-        'menu_position'       => 6,
+        'menu_position'       => 9,
         'menu_icon'           => 'dashicons-megaphone',
-        'supports'            => array( 'title', 'editor', 'thumbnail' ),
+        'supports'            => array( 'title', 'editor' ),
         'has_archive'         => false,
+        'capability_type'     => 'post',
+        'hierarchical'        => false,
     );
 
     register_post_type( 'tijus_popup', $args );
@@ -49,7 +51,7 @@ add_action( 'init', 'tijus_register_popup_cpt' );
 function tijus_add_popup_meta_boxes() {
     add_meta_box(
         'tijus_popup_settings',
-        'Popup Display Settings',
+        'Popup Content & Display Settings',
         'tijus_render_popup_settings_meta_box',
         'tijus_popup',
         'normal',
@@ -66,10 +68,28 @@ function tijus_render_popup_settings_meta_box( $post ) {
     $display_on   = get_post_meta( $post->ID, '_popup_display_on', true );
     $specific_ids = get_post_meta( $post->ID, '_popup_specific_page_ids', true );
     $delay        = get_post_meta( $post->ID, '_popup_delay', true );
+    $popup_img    = get_post_meta( $post->ID, '_popup_image_url', true );
 
     if ( $delay === '' ) $delay = 0;
+    
+    // Ensure media uploader scripts are loaded
+    wp_enqueue_media();
     ?>
     <table class="form-table">
+        <tr>
+            <th><label>Popup Image</label></th>
+            <td>
+                <div id="popup_image_preview" style="margin-bottom: 10px;">
+                    <?php if ( $popup_img ) : ?>
+                        <img src="<?php echo esc_url( $popup_img ); ?>" style="max-width: 300px; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+                    <?php endif; ?>
+                </div>
+                <input type="hidden" name="popup_image_url" id="popup_image_url" value="<?php echo esc_attr( $popup_img ); ?>" />
+                <button type="button" class="button" id="upload_popup_image_btn">Select/Upload Image</button>
+                <button type="button" class="button" id="remove_popup_image_btn" <?php echo $popup_img ? '' : 'style="display:none;"'; ?>>Remove Image</button>
+                <p class="description">This image will appear at the bottom of the popup content.</p>
+            </td>
+        </tr>
         <tr>
             <th><label>Active Status</label></th>
             <td>
@@ -112,6 +132,33 @@ function tijus_render_popup_settings_meta_box( $post ) {
         document.getElementById('popup_display_on').addEventListener('change', function() {
             document.getElementById('specific_pages_row').style.display = (this.value === 'specific') ? '' : 'none';
         });
+
+        // Media Uploader Script
+        jQuery(document).ready(function($){
+            var mediaUploader;
+            $('#upload_popup_image_btn').click(function(e) {
+                e.preventDefault();
+                if (mediaUploader) { mediaUploader.open(); return; }
+                mediaUploader = wp.media({
+                    title: 'Select Popup Image',
+                    button: { text: 'Use this image' },
+                    multiple: false
+                });
+                mediaUploader.on('select', function() {
+                    var attachment = mediaUploader.state().get('selection').first().toJSON();
+                    $('#popup_image_url').val(attachment.url);
+                    $('#popup_image_preview').html('<img src="' + attachment.url + '" style="max-width: 300px; height: auto; border: 1px solid #ccc; border-radius: 4px;" />');
+                    $('#remove_popup_image_btn').show();
+                });
+                mediaUploader.open();
+            });
+            $('#remove_popup_image_btn').click(function(e) {
+                e.preventDefault();
+                $('#popup_image_url').val('');
+                $('#popup_image_preview').empty();
+                $(this).hide();
+            });
+        });
     </script>
     <?php
 }
@@ -132,12 +179,14 @@ function tijus_save_popup_meta( $post_id ) {
     $display_on   = sanitize_text_field( $_POST['popup_display_on'] );
     $specific_ids = sanitize_text_field( $_POST['popup_specific_page_ids'] );
     $delay        = absint( $_POST['popup_delay'] );
+    $image_url    = sanitize_text_field( $_POST['popup_image_url'] );
 
     update_post_meta( $post_id, '_popup_active', $is_active );
     update_post_meta( $post_id, '_popup_show_always', $show_always );
     update_post_meta( $post_id, '_popup_display_on', $display_on );
     update_post_meta( $post_id, '_popup_specific_page_ids', $specific_ids );
     update_post_meta( $post_id, '_popup_delay', $delay );
+    update_post_meta( $post_id, '_popup_image_url', $image_url );
 }
 add_action( 'save_post_tijus_popup', 'tijus_save_popup_meta' );
 
@@ -167,6 +216,7 @@ function tijus_inject_popup() {
     $display_on   = get_post_meta( $popup->ID, '_popup_display_on', true );
     $specific_ids = get_post_meta( $popup->ID, '_popup_specific_page_ids', true );
     $delay        = get_post_meta( $popup->ID, '_popup_delay', true );
+    $popup_img    = get_post_meta( $popup->ID, '_popup_image_url', true );
 
     $should_show = false;
 
@@ -184,7 +234,6 @@ function tijus_inject_popup() {
     if ( ! $should_show ) return;
 
     $content = apply_filters( 'the_content', $popup->post_content );
-    $thumb   = get_the_post_thumbnail_url( $popup->ID, 'full' );
 
     ?>
     <style>
@@ -248,13 +297,6 @@ function tijus_inject_popup() {
         .tijus-popup-inner::-webkit-scrollbar-track { background: #f0f0f0; }
         .tijus-popup-inner::-webkit-scrollbar-thumb { background: #FFC988; border-radius: 10px; }
 
-        .tijus-popup-image {
-            width: 100%;
-            height: auto;
-            border-radius: 0;
-            display: block;
-            margin: 0;
-        }
         .tijus-popup-body {
             padding: 40px;
             font-family: "Montserrat", sans-serif;
@@ -288,8 +330,8 @@ function tijus_inject_popup() {
                     <div class="popup-text-content">
                         <?php echo $content; ?>
                     </div>
-                    <?php if ( $thumb ) : ?>
-                        <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
+                    <?php if ( $popup_img ) : ?>
+                        <img src="<?php echo esc_url( $popup_img ); ?>" class="tijus-popup-image" />
                     <?php endif; ?>
                 </div>
             </div>
