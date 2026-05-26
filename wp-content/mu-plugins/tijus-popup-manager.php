@@ -62,6 +62,7 @@ function tijus_render_popup_settings_meta_box( $post ) {
     wp_nonce_field( 'tijus_save_popup_settings', 'tijus_popup_nonce' );
 
     $is_active    = get_post_meta( $post->ID, '_popup_active', true );
+    $show_always  = get_post_meta( $post->ID, '_popup_show_always', true );
     $display_on   = get_post_meta( $post->ID, '_popup_display_on', true );
     $specific_ids = get_post_meta( $post->ID, '_popup_specific_page_ids', true );
     $delay        = get_post_meta( $post->ID, '_popup_delay', true );
@@ -72,9 +73,13 @@ function tijus_render_popup_settings_meta_box( $post ) {
         <tr>
             <th><label>Active Status</label></th>
             <td>
-                <label>
+                <label style="margin-right: 20px;">
                     <input type="checkbox" name="popup_active" value="1" <?php checked( $is_active, '1' ); ?> />
                     Enable this popup
+                </label>
+                <label>
+                    <input type="checkbox" name="popup_show_always" value="1" <?php checked( $show_always, '1' ); ?> />
+                    Show every time on reload
                 </label>
             </td>
         </tr>
@@ -123,11 +128,13 @@ function tijus_save_popup_meta( $post_id ) {
     }
 
     $is_active    = isset( $_POST['popup_active'] ) ? '1' : '0';
+    $show_always  = isset( $_POST['popup_show_always'] ) ? '1' : '0';
     $display_on   = sanitize_text_field( $_POST['popup_display_on'] );
     $specific_ids = sanitize_text_field( $_POST['popup_specific_page_ids'] );
     $delay        = absint( $_POST['popup_delay'] );
 
     update_post_meta( $post_id, '_popup_active', $is_active );
+    update_post_meta( $post_id, '_popup_show_always', $show_always );
     update_post_meta( $post_id, '_popup_display_on', $display_on );
     update_post_meta( $post_id, '_popup_specific_page_ids', $specific_ids );
     update_post_meta( $post_id, '_popup_delay', $delay );
@@ -156,6 +163,7 @@ function tijus_inject_popup() {
     if ( empty( $popups ) ) return;
 
     $popup = $popups[0];
+    $show_always  = get_post_meta( $popup->ID, '_popup_show_always', true );
     $display_on   = get_post_meta( $popup->ID, '_popup_display_on', true );
     $specific_ids = get_post_meta( $popup->ID, '_popup_specific_page_ids', true );
     $delay        = get_post_meta( $popup->ID, '_popup_delay', true );
@@ -279,25 +287,29 @@ function tijus_inject_popup() {
     <script>
         (function() {
             var delay = <?php echo intval( $delay ) * 1000; ?>;
+            var showAlways = <?php echo ($show_always === '1') ? 'true' : 'false'; ?>;
             var popup = document.getElementById('tijusPopup');
             var close = document.getElementById('tijusPopupClose');
 
             setTimeout(function() {
-                // Check if already shown this session if needed, but for now just show.
-                if ( ! sessionStorage.getItem('tijus_popup_shown_<?php echo $popup->ID; ?>') ) {
+                if ( showAlways || ! sessionStorage.getItem('tijus_popup_shown_<?php echo $popup->ID; ?>') ) {
                     popup.style.display = 'flex';
                 }
             }, delay);
 
             close.onclick = function() {
                 popup.style.display = 'none';
-                sessionStorage.setItem('tijus_popup_shown_<?php echo $popup->ID; ?>', 'true');
+                if (!showAlways) {
+                    sessionStorage.setItem('tijus_popup_shown_<?php echo $popup->ID; ?>', 'true');
+                }
             };
 
             popup.onclick = function(e) {
                 if (e.target === popup) {
                     popup.style.display = 'none';
-                    sessionStorage.setItem('tijus_popup_shown_<?php echo $popup->ID; ?>', 'true');
+                    if (!showAlways) {
+                        sessionStorage.setItem('tijus_popup_shown_<?php echo $popup->ID; ?>', 'true');
+                    }
                 }
             };
         })();
