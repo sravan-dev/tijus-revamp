@@ -281,7 +281,7 @@ add_action( 'login_footer', function() {
             </a>
         </div>
         <div class="login-copyright">
-            Copyright @tijusacademy 2022 <span>|</span> Privacy Policy
+            Copyright @tijusacademy 2026-2027 <span>|</span> Privacy Policy
         </div>
     </div>
     
