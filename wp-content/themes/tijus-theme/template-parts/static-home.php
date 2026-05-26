@@ -102,20 +102,23 @@
 
                 <!-- All Courses Tabs Menu Start -->
                 <?php
-                $categories = get_terms( [
-                    'taxonomy'   => 'course_category',
-                    'hide_empty' => false,
-                ] );
+                // Order categories to match the mega menu
+                $cat_slugs_order = ['language-exams', 'healthcare-licensing', 'diploma-programs', 'wellness', 'tijus-media-school'];
+                $categories = [];
+                foreach ( $cat_slugs_order as $slug ) {
+                    $term = get_term_by( 'slug', $slug, 'course_category' );
+                    if ( $term && ! is_wp_error( $term ) ) {
+                        $categories[] = $term;
+                    }
+                }
                 // Fallback to dummy names
-                if ( empty($categories) || is_wp_error($categories) ) {
+                if ( empty( $categories ) ) {
                     $categories = [
-                        (object)['slug' => 'ui-ux-design', 'name' => 'UI/UX Design'],
-                        (object)['slug' => 'development', 'name' => 'Development'],
-                        (object)['slug' => 'data-science', 'name' => 'Data Science'],
-                        (object)['slug' => 'business', 'name' => 'Business'],
-                        (object)['slug' => 'financial', 'name' => 'Financial'],
-                        (object)['slug' => 'marketing', 'name' => 'Marketing'],
-                        (object)['slug' => 'design', 'name' => 'Design'],
+                        (object)['slug' => 'language-exams', 'name' => 'Language Exams'],
+                        (object)['slug' => 'healthcare-licensing', 'name' => 'Healthcare Licensing'],
+                        (object)['slug' => 'diploma-programs', 'name' => 'Diploma Programs'],
+                        (object)['slug' => 'wellness', 'name' => 'Wellness'],
+                        (object)['slug' => 'tijus-media-school', 'name' => "Tiju's Media School"],
                     ];
                 }
                 ?>
