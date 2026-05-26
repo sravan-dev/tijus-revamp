@@ -118,10 +118,20 @@ while ( have_posts() ) :
                                 <img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="<?php the_title_attribute(); ?>">
                                 <span class="tags">Course</span>
 
+                                <?php
+                                $video_type = get_post_meta( get_the_ID(), '_course_video_type', true );
+                                $video_url  = get_post_meta( get_the_ID(), '_course_video_url', true );
+                                if ( $video_url ) :
+                                ?>
                                 <div class="courses-play">
                                     <img src="<?php echo get_template_directory_uri(); ?>/assets/images/courses/circle-shape.png" alt="Play">
-                                    <a class="play video-popup" href="https://www.youtube.com/watch?v=Wif4ZkwC0AM"><i class="flaticon-play"></i></a>
+                                    <?php if ( $video_type === 'local' ) : ?>
+                                        <a class="play video-popup-local" href="<?php echo esc_url( $video_url ); ?>" data-type="local"><i class="flaticon-play"></i></a>
+                                    <?php else : ?>
+                                        <a class="play video-popup" href="<?php echo esc_url( $video_url ); ?>"><i class="flaticon-play"></i></a>
+                                    <?php endif; ?>
                                 </div>
+                                <?php endif; ?>
                             </div>
 
                             <h2 class="title"><?php the_title(); ?></h2>

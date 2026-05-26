@@ -586,9 +586,42 @@ function tijus_render_course_meta_box( $post ) {
 	$level            = get_post_meta( $post->ID, '_course_level', true );
 	$language         = get_post_meta( $post->ID, '_course_language', true );
 	$certificate      = get_post_meta( $post->ID, '_course_certificate', true );
+	$video_type       = get_post_meta( $post->ID, '_course_video_type', true );
+	$video_url        = get_post_meta( $post->ID, '_course_video_url', true );
 
+	if ( empty( $video_type ) ) $video_type = 'youtube';
+
+	wp_enqueue_media();
 	?>
 	<table class="form-table">
+		<tr>
+			<th><label>Preview Video</label></th>
+			<td>
+				<label style="margin-right: 20px;">
+					<input type="radio" name="course_video_type" value="youtube" <?php checked( $video_type, 'youtube' ); ?> /> YouTube URL
+				</label>
+				<label>
+					<input type="radio" name="course_video_type" value="local" <?php checked( $video_type, 'local' ); ?> /> Local File (Media Library)
+				</label>
+			</td>
+		</tr>
+		<tr id="course_video_youtube_row" style="<?php echo $video_type === 'local' ? 'display:none;' : ''; ?>">
+			<th><label for="course_video_url_yt">YouTube URL</label></th>
+			<td>
+				<input type="url" id="course_video_url_yt" name="course_video_url" value="<?php echo $video_type === 'youtube' ? esc_attr( $video_url ) : ''; ?>" class="regular-text" placeholder="https://www.youtube.com/watch?v=..." />
+			</td>
+		</tr>
+		<tr id="course_video_local_row" style="<?php echo $video_type === 'youtube' ? 'display:none;' : ''; ?>">
+			<th><label>Local Video File</label></th>
+			<td>
+				<input type="text" id="course_video_url_local" name="course_video_url_local" value="<?php echo $video_type === 'local' ? esc_attr( $video_url ) : ''; ?>" class="regular-text" placeholder="Select a video file" readonly />
+				<button type="button" class="button" id="upload_course_video_btn">Select Video</button>
+				<button type="button" class="button" id="remove_course_video_btn" <?php echo ( $video_type === 'local' && $video_url ) ? '' : 'style="display:none;"'; ?>>Remove</button>
+				<?php if ( $video_type === 'local' && $video_url ) : ?>
+					<p class="description" style="margin-top:5px;"><a href="<?php echo esc_url( $video_url ); ?>" target="_blank">View current file</a></p>
+				<?php endif; ?>
+			</td>
+		</tr>
 		<tr>
 			<th><label for="course_secondary_author">Secondary Author</label></th>
 			<td><input type="text" id="course_secondary_author" name="course_secondary_author" value="<?php echo esc_attr( $secondary_author ); ?>" class="regular-text" placeholder="e.g. Ohula Malsh" /></td>
@@ -677,6 +710,44 @@ function tijus_render_course_meta_box( $post ) {
             </td>
         </tr>
 	</table>
+	<script>
+		jQuery(document).ready(function($) {
+			// Video type toggle
+			$('input[name="course_video_type"]').on('change', function() {
+				if ($(this).val() === 'youtube') {
+					$('#course_video_youtube_row').show();
+					$('#course_video_local_row').hide();
+				} else {
+					$('#course_video_youtube_row').hide();
+					$('#course_video_local_row').show();
+				}
+			});
+
+			// Local video media uploader
+			var videoUploader;
+			$('#upload_course_video_btn').on('click', function(e) {
+				e.preventDefault();
+				if (videoUploader) { videoUploader.open(); return; }
+				videoUploader = wp.media({
+					title: 'Select Video File',
+					button: { text: 'Use this video' },
+					library: { type: 'video' },
+					multiple: false
+				});
+				videoUploader.on('select', function() {
+					var attachment = videoUploader.state().get('selection').first().toJSON();
+					$('#course_video_url_local').val(attachment.url);
+					$('#remove_course_video_btn').show();
+				});
+				videoUploader.open();
+			});
+			$('#remove_course_video_btn').on('click', function(e) {
+				e.preventDefault();
+				$('#course_video_url_local').val('');
+				$(this).hide();
+			});
+		});
+	</script>
 	<?php
 }
 
@@ -707,6 +778,18 @@ function tijus_save_course_meta_data( $post_id ) {
 	foreach ( $fields as $field => $meta_key ) {
 		if ( isset( $_POST[ $field ] ) ) {
 			update_post_meta( $post_id, $meta_key, sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) );
+		}
+	}
+
+	// Save video type and URL
+	if ( isset( $_POST['course_video_type'] ) ) {
+		$video_type = sanitize_text_field( $_POST['course_video_type'] );
+		update_post_meta( $post_id, '_course_video_type', $video_type );
+
+		if ( $video_type === 'youtube' && isset( $_POST['course_video_url'] ) ) {
+			update_post_meta( $post_id, '_course_video_url', esc_url_raw( $_POST['course_video_url'] ) );
+		} elseif ( $video_type === 'local' && isset( $_POST['course_video_url_local'] ) ) {
+			update_post_meta( $post_id, '_course_video_url', esc_url_raw( $_POST['course_video_url_local'] ) );
 		}
 	}
 

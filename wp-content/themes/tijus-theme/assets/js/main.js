@@ -91,6 +91,20 @@
         // other options
     });
 
+    $('.video-popup-local').magnificPopup({
+        type: 'inline',
+        callbacks: {
+            open: function() {
+                var src = this.currItem.el.attr('href');
+                this.content = $('<div class="mfp-local-video-wrap"><video controls autoplay style="width:100%;max-height:80vh;"><source src="' + src + '" type="video/mp4">Your browser does not support the video tag.</video></div>');
+                this.updateItemHTML();
+            },
+            close: function() {
+                this.content.find('video').each(function() { this.pause(); });
+            }
+        }
+    });
+
     $('.image-popup').magnificPopup({
         type: 'image',
         gallery:{
