@@ -46,14 +46,14 @@ function tijus_render_dashboard_stats_widget() {
             'count' => $post_count,
             'label' => 'Posts',
             'color' => '#17a2b8',
-            'icon'  => 'dashicons-admin-post',
+            'icon'  => 'dashicons-pin',
             'link'  => admin_url( 'edit.php' )
         ),
         array(
             'count' => $course_count,
             'label' => 'Courses',
             'color' => '#28a745',
-            'icon'  => 'dashicons-welcome-learn-more',
+            'icon'  => 'dashicons-education',
             'link'  => admin_url( 'edit.php?post_type=course' )
         ),
         array(
@@ -62,7 +62,7 @@ function tijus_render_dashboard_stats_widget() {
             'color' => '#ffc107',
             'icon'  => 'dashicons-groups',
             'link'  => admin_url( 'admin.php?page=tijus-customers' ),
-            'text_color' => '#000'
+            'text_color' => '#fff'
         ),
         array(
             'count' => $career_count,
@@ -74,13 +74,13 @@ function tijus_render_dashboard_stats_widget() {
     );
     ?>
     <style>
-        #tijus_dashboard_stats { border: none; background: transparent; box-shadow: none; }
+        #tijus_dashboard_stats { border: none; background: transparent; box-shadow: none; margin-top: 20px; }
         #tijus_dashboard_stats .postbox-header { display: none; }
         #tijus_dashboard_stats .inside { margin: 0; padding: 0; }
         .tijus-stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            gap: 25px;
             padding: 0 0 20px 0;
         }
         @media (max-width: 1200px) {
@@ -90,63 +90,63 @@ function tijus_render_dashboard_stats_widget() {
             .tijus-stats-grid { grid-template-columns: 1fr; }
         }
         .tijus-stat-card {
-            border-radius: 4px;
-            color: #fff;
+            border-radius: 5px;
+            color: #fff !important;
             position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
-            min-height: 140px;
+            min-height: 130px;
         }
-        .tijus-stat-card .inner { padding: 20px; z-index: 2; }
+        .tijus-stat-card .inner { padding: 15px 20px; z-index: 2; }
         .tijus-stat-card h3 {
-            font-size: 44px;
-            font-weight: 800;
-            margin: 0 0 10px 0;
+            font-size: 42px;
+            font-weight: 700;
+            margin: 0 0 5px 0;
             white-space: nowrap;
             padding: 0;
-            color: inherit;
-            line-height: 1;
+            color: #fff !important;
+            line-height: 1.2;
         }
         .tijus-stat-card p {
-            font-size: 16px;
+            font-size: 18px;
             margin: 0;
             font-weight: 500;
+            color: rgba(255,255,255,0.8);
         }
         .tijus-stat-card .icon {
             position: absolute;
-            top: 15px;
+            top: 5px;
             right: 15px;
             z-index: 1;
+            transition: all .3s linear;
         }
         .tijus-stat-card .icon .dashicons {
-            font-size: 70px;
-            width: 70px;
-            height: 70px;
-            opacity: 0.15;
-            color: inherit;
+            font-size: 80px;
+            width: 80px;
+            height: 80px;
+            opacity: 0.2;
+            color: #000;
         }
+        /* Specific Icon Rotations to match screenshot */
+        .tijus-stat-card:nth-child(1) .icon { transform: rotate(30deg); top: 15px; }
+        
         .tijus-stat-card .small-box-footer {
             background-color: rgba(0,0,0,.1);
             color: rgba(255,255,255,.8);
             display: block;
-            padding: 5px 0;
+            padding: 4px 0;
             position: relative;
             text-align: center;
             text-decoration: none;
             z-index: 10;
             margin-top: auto;
+            font-size: 14px;
         }
         .tijus-stat-card .small-box-footer:hover {
             background-color: rgba(0,0,0,.15);
             color: #fff;
-        }
-        .tijus-stat-card.text-dark .small-box-footer {
-            color: rgba(0,0,0,.8);
-        }
-        .tijus-stat-card.text-dark .small-box-footer:hover {
-            color: #000;
         }
     </style>
 
