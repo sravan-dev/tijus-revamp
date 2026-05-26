@@ -1091,39 +1091,35 @@ add_action( 'wp_ajax_nopriv_tijus_filter_courses', 'tijus_ajax_filter_courses' )
  */
 function tijus_home_course_tabs_shortcode() {
     ob_start();
-	$categories = get_terms( [
-		'taxonomy'   => 'course_category',
-		'hide_empty' => false,
-	] );
-	
-	if ( empty($categories) || is_wp_error($categories) ) {
+	$cat_slugs_order = ['language-exams', 'healthcare-licensing', 'diploma-programs', 'wellness', 'tijus-media-school'];
+	$categories = [];
+	foreach ( $cat_slugs_order as $slug ) {
+		$term = get_term_by( 'slug', $slug, 'course_category' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$categories[] = $term;
+		}
+	}
+	if ( empty( $categories ) ) {
 		$categories = [
-			(object)['slug' => 'ui-ux-design', 'name' => 'UI/UX Design'],
-			(object)['slug' => 'development', 'name' => 'Development'],
-			(object)['slug' => 'data-science', 'name' => 'Data Science'],
-			(object)['slug' => 'business', 'name' => 'Business'],
-			(object)['slug' => 'financial', 'name' => 'Financial'],
-			(object)['slug' => 'marketing', 'name' => 'Marketing'],
-			(object)['slug' => 'design', 'name' => 'Design'],
+			(object)['slug' => 'language-exams', 'name' => 'Language Exams'],
+			(object)['slug' => 'healthcare-licensing', 'name' => 'Healthcare Licensing'],
+			(object)['slug' => 'diploma-programs', 'name' => 'Diploma Programs'],
+			(object)['slug' => 'wellness', 'name' => 'Wellness'],
+			(object)['slug' => 'tijus-media-school', 'name' => "Tiju's Media School"],
 		];
 	}
 	?>
 	<!-- All Courses Tabs Menu Start -->
-	<div class="courses-tabs-menu courses-active">
-		<div class="swiper-container">
-			<ul class="swiper-wrapper nav">
-				<?php foreach ( $categories as $index => $category ) : ?>
-					<li class="swiper-slide">
-						<button class="<?php echo ( $index === 0 ) ? 'active' : ''; ?>" data-bs-toggle="tab" data-bs-target="#tabs-<?php echo esc_attr( $category->slug ); ?>">
-							<?php echo esc_html( $category->name ); ?>
-						</button>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-		</div>
-		<!-- Add Pagination -->
-		<div class="swiper-button-next"><i class="icofont-rounded-right"></i></div>
-		<div class="swiper-button-prev"><i class="icofont-rounded-left"></i></div>
+	<div class="courses-tabs-menu">
+		<ul class="nav" style="display:flex; gap:12px; list-style:none; margin:0; padding:0;">
+			<?php foreach ( $categories as $index => $category ) : ?>
+				<li style="flex:1;">
+					<button class="<?php echo ( $index === 0 ) ? 'active' : ''; ?>" data-bs-toggle="tab" data-bs-target="#tabs-<?php echo esc_attr( $category->slug ); ?>">
+						<?php echo esc_html( $category->name ); ?>
+					</button>
+				</li>
+			<?php endforeach; ?>
+		</ul>
 	</div>
 	<!-- All Courses Tabs Menu End -->
 
@@ -1142,6 +1138,8 @@ function tijus_home_course_tabs_shortcode() {
 							'post_type'      => 'course',
 							'posts_per_page' => 6,
 							'paged'          => $paged,
+							'orderby'        => 'menu_order',
+							'order'          => 'ASC',
 						];
 						
 						if ( $has_real_terms ) {
