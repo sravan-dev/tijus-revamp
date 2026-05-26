@@ -169,7 +169,7 @@ while ( have_posts() ) :
                                 <div class="details-tab-menu">
                                     <ul class="nav justify-content-center">
                                         <li><button class="active" data-bs-toggle="tab" data-bs-target="#description">Description</button></li>
-                                        <li><button data-bs-toggle="tab" data-bs-target="#instructors">Instructors</button></li>
+                                        <li><button data-bs-toggle="tab" data-bs-target="#testimonials">Testimonials</button></li>
                                         <li><button data-bs-toggle="tab" data-bs-target="#reviews">Reviews</button></li>
                                         <li><button data-bs-toggle="tab" data-bs-target="#faqs">FAQ</button></li>
                                     </ul>
@@ -191,56 +191,74 @@ while ( have_posts() ) :
                                             <!-- Tab Description End -->
 
                                         </div>
-                                        <div class="tab-pane fade" id="instructors">
+                                        <div class="tab-pane fade" id="testimonials">
 
-                                            <!-- Tab Instructors Start -->
-                                            <div class="tab-instructors">
-                                                <h3 class="tab-title">Course Instructor:</h3>
+                                            <!-- Tab Testimonials Start -->
+                                            <div class="tab-testimonials">
+                                                <h3 class="tab-title">Student Testimonials:</h3>
 
-                                                <div class="row">
-                                                    <div class="col-md-3 col-6">
-                                                        <!-- Single Team Start -->
-                                                        <div class="single-team">
-                                                            <div class="team-thumb">
-                                                                <img src="<?php echo esc_url( $author_avatar ); ?>" alt="Author">
-                                                            </div>
-                                                            <div class="team-content">
-                                                                <div class="rating">
-                                                                    <span class="count">4.9</span>
-                                                                    <i class="icofont-star"></i>
-                                                                    <span class="text">(rating)</span>
-                                                                </div>
-                                                                <h4 class="name"><?php echo esc_html( $author_name ); ?></h4>
-                                                                <span class="designation">Instructor</span>
-                                                            </div>
+                                                <?php
+                                                $testimonials = get_post_meta( get_the_ID(), '_course_testimonials', true );
+                                                if ( is_array( $testimonials ) && ! empty( $testimonials ) ) :
+                                                ?>
+                                                <style>
+                                                    .testimonial-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
+                                                    .testimonial-card { background: #f8f9fa; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s; }
+                                                    .testimonial-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+                                                    .testimonial-video-wrap { position: relative; padding-top: 56.25%; background: #000; cursor: pointer; }
+                                                    .testimonial-video-wrap img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+                                                    .testimonial-play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+                                                    .testimonial-play-icon::after { content: ''; display: block; width: 0; height: 0; border-style: solid; border-width: 8px 0 8px 16px; border-color: transparent transparent transparent #333; margin-left: 3px; }
+                                                    .testimonial-card-title { padding: 12px 15px; font-size: 14px; font-weight: 600; color: #333; text-align: center; }
+                                                    .testimonial-video-wrap video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+                                                    @media (max-width: 992px) { .testimonial-grid { grid-template-columns: repeat(2, 1fr); } }
+                                                    @media (max-width: 576px) { .testimonial-grid { grid-template-columns: 1fr; } }
+                                                </style>
+                                                <div class="testimonial-grid">
+                                                    <?php foreach ( $testimonials as $ti => $t ) :
+                                                        $t_type  = $t['type'] ?? 'youtube';
+                                                        $t_url   = $t['url'] ?? '';
+                                                        $t_title = $t['title'] ?? '';
+
+                                                        // Get YouTube thumbnail
+                                                        $yt_thumb = '';
+                                                        if ( $t_type === 'youtube' && $t_url ) {
+                                                            preg_match('/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $t_url, $m);
+                                                            if ( ! empty( $m[1] ) ) {
+                                                                $yt_thumb = 'https://img.youtube.com/vi/' . $m[1] . '/hqdefault.jpg';
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <div class="testimonial-card">
+                                                        <div class="testimonial-video-wrap">
+                                                            <?php if ( $t_type === 'youtube' ) : ?>
+                                                                <a href="<?php echo esc_url( $t_url ); ?>" class="video-popup" style="display:block;position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;">
+                                                                    <?php if ( $yt_thumb ) : ?>
+                                                                        <img src="<?php echo esc_url( $yt_thumb ); ?>" alt="<?php echo esc_attr( $t_title ); ?>">
+                                                                    <?php endif; ?>
+                                                                    <span class="testimonial-play-icon"></span>
+                                                                </a>
+                                                            <?php else : ?>
+                                                                <a href="<?php echo esc_url( $t_url ); ?>" class="video-popup-local" style="display:block;position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;">
+                                                                    <video muted preload="metadata" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">
+                                                                        <source src="<?php echo esc_url( $t_url ); ?>#t=0.5" type="video/mp4">
+                                                                    </video>
+                                                                    <span class="testimonial-play-icon"></span>
+                                                                </a>
+                                                            <?php endif; ?>
                                                         </div>
-                                                        <!-- Single Team End -->
+                                                        <?php if ( $t_title ) : ?>
+                                                            <div class="testimonial-card-title"><?php echo esc_html( $t_title ); ?></div>
+                                                        <?php endif; ?>
                                                     </div>
-                                                    
-                                                    <?php if ( $secondary_author ) : ?>
-                                                    <div class="col-md-3 col-6">
-                                                        <!-- Single Team Start -->
-                                                        <div class="single-team">
-                                                            <div class="team-thumb">
-                                                                <img src="<?php echo get_template_directory_uri(); ?>/assets/images/author/author-02.jpg" alt="Author">
-                                                            </div>
-                                                            <div class="team-content">
-                                                                <div class="rating">
-                                                                    <span class="count">4.9</span>
-                                                                    <i class="icofont-star"></i>
-                                                                    <span class="text">(rating)</span>
-                                                                </div>
-                                                                <h4 class="name"><?php echo esc_html( $secondary_author ); ?></h4>
-                                                                <span class="designation">Instructor</span>
-                                                            </div>
-                                                        </div>
-                                                        <!-- Single Team End -->
-                                                    </div>
-                                                    <?php endif; ?>
+                                                    <?php endforeach; ?>
                                                 </div>
+                                                <?php else : ?>
+                                                    <p style="color:#888; margin-top:15px;">No testimonial videos added yet.</p>
+                                                <?php endif; ?>
 
                                             </div>
-                                            <!-- Tab Instructors End -->
+                                            <!-- Tab Testimonials End -->
 
                                         </div>
                                         <div class="tab-pane fade" id="reviews">

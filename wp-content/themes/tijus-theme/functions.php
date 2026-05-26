@@ -709,6 +709,41 @@ function tijus_render_course_meta_box( $post ) {
                 </script>
             </td>
         </tr>
+        <tr>
+            <th><label>Testimonial Videos</label></th>
+            <td>
+                <?php $testimonials = get_post_meta($post->ID, '_course_testimonials', true); ?>
+                <div id="tijus_testimonial_container">
+                    <?php
+                    if (is_array($testimonials) && !empty($testimonials)) {
+                        foreach ($testimonials as $ti => $t) {
+                            $t_type = $t['type'] ?? 'youtube';
+                            $t_url  = $t['url'] ?? '';
+                            $t_title = $t['title'] ?? '';
+                            ?>
+                            <div class="testimonial-row" style="margin-bottom:15px; padding:15px; background:#f0f7ff; border:1px solid #c8ddf0; border-radius:4px;">
+                                <input type="text" name="course_testimonials[<?php echo $ti; ?>][title]" value="<?php echo esc_attr($t_title); ?>" placeholder="Title (optional)" style="width:100%; margin-bottom:8px;" />
+                                <div style="margin-bottom:8px;">
+                                    <label style="margin-right:15px;"><input type="radio" name="course_testimonials[<?php echo $ti; ?>][type]" value="youtube" <?php checked($t_type, 'youtube'); ?> class="testimonial-type-radio" /> YouTube</label>
+                                    <label><input type="radio" name="course_testimonials[<?php echo $ti; ?>][type]" value="local" <?php checked($t_type, 'local'); ?> class="testimonial-type-radio" /> Local File</label>
+                                </div>
+                                <div class="testimonial-yt-field" style="<?php echo $t_type === 'local' ? 'display:none;' : ''; ?>">
+                                    <input type="url" name="course_testimonials[<?php echo $ti; ?>][url_yt]" value="<?php echo $t_type === 'youtube' ? esc_attr($t_url) : ''; ?>" placeholder="https://www.youtube.com/watch?v=..." style="width:100%;" />
+                                </div>
+                                <div class="testimonial-local-field" style="<?php echo $t_type === 'youtube' ? 'display:none;' : ''; ?>">
+                                    <input type="text" name="course_testimonials[<?php echo $ti; ?>][url_local]" value="<?php echo $t_type === 'local' ? esc_attr($t_url) : ''; ?>" placeholder="Select a video file" style="width:80%;" readonly />
+                                    <button type="button" class="button testimonial-upload-btn">Select</button>
+                                </div>
+                                <button type="button" class="button remove-testimonial-btn" style="color:#b32d2e; margin-top:8px;">Remove</button>
+                            </div>
+                            <?php
+                        }
+                    }
+                    ?>
+                </div>
+                <button type="button" id="add_testimonial_btn" class="button button-primary">Add Testimonial Video</button>
+            </td>
+        </tr>
 	</table>
 	<script>
 		jQuery(document).ready(function($) {
@@ -745,6 +780,54 @@ function tijus_render_course_meta_box( $post ) {
 				e.preventDefault();
 				$('#course_video_url_local').val('');
 				$(this).hide();
+			});
+
+			// Testimonial Videos
+			var tIndex = <?php echo is_array($testimonials) ? count($testimonials) : 0; ?>;
+			$('#add_testimonial_btn').on('click', function() {
+				var html = '<div class="testimonial-row" style="margin-bottom:15px; padding:15px; background:#f0f7ff; border:1px solid #c8ddf0; border-radius:4px;">' +
+					'<input type="text" name="course_testimonials[' + tIndex + '][title]" placeholder="Title (optional)" style="width:100%; margin-bottom:8px;" />' +
+					'<div style="margin-bottom:8px;">' +
+					'<label style="margin-right:15px;"><input type="radio" name="course_testimonials[' + tIndex + '][type]" value="youtube" checked class="testimonial-type-radio" /> YouTube</label>' +
+					'<label><input type="radio" name="course_testimonials[' + tIndex + '][type]" value="local" class="testimonial-type-radio" /> Local File</label>' +
+					'</div>' +
+					'<div class="testimonial-yt-field"><input type="url" name="course_testimonials[' + tIndex + '][url_yt]" placeholder="https://www.youtube.com/watch?v=..." style="width:100%;" /></div>' +
+					'<div class="testimonial-local-field" style="display:none;"><input type="text" name="course_testimonials[' + tIndex + '][url_local]" placeholder="Select a video file" style="width:80%;" readonly /> <button type="button" class="button testimonial-upload-btn">Select</button></div>' +
+					'<button type="button" class="button remove-testimonial-btn" style="color:#b32d2e; margin-top:8px;">Remove</button>' +
+					'</div>';
+				$('#tijus_testimonial_container').append(html);
+				tIndex++;
+			});
+
+			$('#tijus_testimonial_container').on('click', '.remove-testimonial-btn', function() {
+				$(this).closest('.testimonial-row').remove();
+			});
+
+			$('#tijus_testimonial_container').on('change', '.testimonial-type-radio', function() {
+				var row = $(this).closest('.testimonial-row');
+				if ($(this).val() === 'youtube') {
+					row.find('.testimonial-yt-field').show();
+					row.find('.testimonial-local-field').hide();
+				} else {
+					row.find('.testimonial-yt-field').hide();
+					row.find('.testimonial-local-field').show();
+				}
+			});
+
+			$('#tijus_testimonial_container').on('click', '.testimonial-upload-btn', function(e) {
+				e.preventDefault();
+				var inputField = $(this).prev('input');
+				var uploader = wp.media({
+					title: 'Select Testimonial Video',
+					button: { text: 'Use this video' },
+					library: { type: 'video' },
+					multiple: false
+				});
+				uploader.on('select', function() {
+					var attachment = uploader.state().get('selection').first().toJSON();
+					inputField.val(attachment.url);
+				});
+				uploader.open();
 			});
 		});
 	</script>
@@ -807,6 +890,22 @@ function tijus_save_course_meta_data( $post_id ) {
         update_post_meta($post_id, '_course_faqs', $sanitized_faqs);
     } else {
         delete_post_meta($post_id, '_course_faqs');
+    }
+
+    // Save testimonial videos
+    if (isset($_POST['course_testimonials']) && is_array($_POST['course_testimonials'])) {
+        $sanitized = [];
+        foreach ($_POST['course_testimonials'] as $t) {
+            $type  = sanitize_text_field($t['type'] ?? 'youtube');
+            $url   = ($type === 'youtube') ? esc_url_raw($t['url_yt'] ?? '') : esc_url_raw($t['url_local'] ?? '');
+            $title = sanitize_text_field(wp_unslash($t['title'] ?? ''));
+            if (!empty($url)) {
+                $sanitized[] = ['type' => $type, 'url' => $url, 'title' => $title];
+            }
+        }
+        update_post_meta($post_id, '_course_testimonials', $sanitized);
+    } else {
+        delete_post_meta($post_id, '_course_testimonials');
     }
 }
 add_action( 'save_post_course', 'tijus_save_course_meta_data' );
