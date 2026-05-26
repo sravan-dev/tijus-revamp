@@ -299,7 +299,7 @@ add_action( 'login_footer', function() {
         if (userLogin) userLogin.placeholder = 'Enter Email';
         
         var userPass = document.getElementById('user_pass');
-        if (userPass) userPass.placeholder = 'Passcode';
+        if (userPass) userPass.placeholder = 'Password';
         
         // Reposition trouble link
         var troubleLink = document.querySelector('.trouble-link');
