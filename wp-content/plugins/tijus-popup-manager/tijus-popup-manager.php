@@ -1,0 +1,272 @@
+<?php
+/*
+Plugin Name: Tijus Popup Manager
+Description: Create and manage promotional popups with page targeting and trigger time options.
+Author: Gemini CLI
+Version: 1.0
+*/
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+/**
+ * Register the 'Popup' Custom Post Type.
+ */
+function tijus_register_popup_cpt() {
+    $labels = array(
+        'name'               => 'Popups',
+        'singular_name'      => 'Popup',
+        'menu_name'          => 'Popups',
+        'add_new'            => 'Add New',
+        'add_new_item'       => 'Add New Popup',
+        'edit_item'          => 'Edit Popup',
+        'new_item'           => 'New Popup',
+        'view_item'          => 'View Popup',
+        'search_items'       => 'Search Popups',
+        'not_found'          => 'No popups found',
+        'not_found_in_trash' => 'No popups found in Trash',
+    );
+
+    $args = array(
+        'labels'              => $labels,
+        'public'              => false,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'menu_position'       => 25,
+        'menu_icon'           => 'dashicons-megaphone',
+        'supports'            => array( 'title', 'editor', 'thumbnail' ),
+        'has_archive'         => false,
+    );
+
+    register_post_type( 'tijus_popup', $args );
+}
+add_action( 'init', 'tijus_register_popup_cpt' );
+
+/**
+ * Add Meta Boxes for Popup Settings.
+ */
+function tijus_add_popup_meta_boxes() {
+    add_meta_box(
+        'tijus_popup_settings',
+        'Popup Display Settings',
+        'tijus_render_popup_settings_meta_box',
+        'tijus_popup',
+        'normal',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'tijus_add_popup_meta_boxes' );
+
+function tijus_render_popup_settings_meta_box( $post ) {
+    wp_nonce_field( 'tijus_save_popup_settings', 'tijus_popup_nonce' );
+
+    $is_active    = get_post_meta( $post->ID, '_popup_active', true );
+    $display_on   = get_post_meta( $post->ID, '_popup_display_on', true );
+    $specific_ids = get_post_meta( $post->ID, '_popup_specific_page_ids', true );
+    $delay        = get_post_meta( $post->ID, '_popup_delay', true );
+
+    if ( $delay === '' ) $delay = 0;
+    ?>
+    <table class="form-table">
+        <tr>
+            <th><label>Active Status</label></th>
+            <td>
+                <label>
+                    <input type="checkbox" name="popup_active" value="1" <?php checked( $is_active, '1' ); ?> />
+                    Enable this popup
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="popup_display_on">Display On</label></th>
+            <td>
+                <select name="popup_display_on" id="popup_display_on" style="width: 250px;">
+                    <option value="all" <?php selected( $display_on, 'all' ); ?>>All Pages</option>
+                    <option value="home" <?php selected( $display_on, 'home' ); ?>>Home Page Only</option>
+                    <option value="specific" <?php selected( $display_on, 'specific' ); ?>>Specific Pages/Posts</option>
+                </select>
+            </td>
+        </tr>
+        <tr id="specific_pages_row" style="<?php echo ( $display_on === 'specific' ) ? '' : 'display:none;'; ?>">
+            <th><label for="popup_specific_page_ids">Page/Post IDs</label></th>
+            <td>
+                <input type="text" name="popup_specific_page_ids" id="popup_specific_page_ids" value="<?php echo esc_attr( $specific_ids ); ?>" class="regular-text" placeholder="e.g. 12, 45, 89" />
+                <p class="description">Comma separated list of Page or Post IDs.</p>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="popup_delay">Trigger Delay (Seconds)</label></th>
+            <td>
+                <input type="number" name="popup_delay" id="popup_delay" value="<?php echo esc_attr( $delay ); ?>" min="0" class="small-text" />
+                <p class="description">How many seconds to wait before showing the popup.</p>
+            </td>
+        </tr>
+    </table>
+    <script>
+        document.getElementById('popup_display_on').addEventListener('change', function() {
+            document.getElementById('specific_pages_row').style.display = (this.value === 'specific') ? '' : 'none';
+        });
+    </script>
+    <?php
+}
+
+/**
+ * Save Popup Meta Data.
+ */
+function tijus_save_popup_meta( $post_id ) {
+    if ( ! isset( $_POST['tijus_popup_nonce'] ) || ! wp_verify_nonce( $_POST['tijus_popup_nonce'], 'tijus_save_popup_settings' ) ) {
+        return;
+    }
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+
+    $is_active    = isset( $_POST['popup_active'] ) ? '1' : '0';
+    $display_on   = sanitize_text_field( $_POST['popup_display_on'] );
+    $specific_ids = sanitize_text_field( $_POST['popup_specific_page_ids'] );
+    $delay        = absint( $_POST['popup_delay'] );
+
+    update_post_meta( $post_id, '_popup_active', $is_active );
+    update_post_meta( $post_id, '_popup_display_on', $display_on );
+    update_post_meta( $post_id, '_popup_specific_page_ids', $specific_ids );
+    update_post_meta( $post_id, '_popup_delay', $delay );
+}
+add_action( 'save_post_tijus_popup', 'tijus_save_popup_meta' );
+
+/**
+ * Frontend: Inject Popup.
+ */
+function tijus_inject_popup() {
+    if ( is_admin() ) return;
+
+    $args = array(
+        'post_type'      => 'tijus_popup',
+        'posts_per_page' => 1,
+        'meta_query'     => array(
+            array(
+                'key'   => '_popup_active',
+                'value' => '1',
+            ),
+        ),
+    );
+
+    $popups = get_posts( $args );
+
+    if ( empty( $popups ) ) return;
+
+    $popup = $popups[0];
+    $display_on   = get_post_meta( $popup->ID, '_popup_display_on', true );
+    $specific_ids = get_post_meta( $popup->ID, '_popup_specific_page_ids', true );
+    $delay        = get_post_meta( $popup->ID, '_popup_delay', true );
+
+    $should_show = false;
+
+    if ( $display_on === 'all' ) {
+        $should_show = true;
+    } elseif ( $display_on === 'home' && is_front_page() ) {
+        $should_show = true;
+    } elseif ( $display_on === 'specific' ) {
+        $ids = array_map( 'trim', explode( ',', $specific_ids ) );
+        if ( in_array( get_the_ID(), $ids ) ) {
+            $should_show = true;
+        }
+    }
+
+    if ( ! $should_show ) return;
+
+    $content = apply_filters( 'the_content', $popup->post_content );
+    $thumb   = get_the_post_thumbnail_url( $popup->ID, 'full' );
+
+    ?>
+    <style>
+        .tijus-popup-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            backdrop-filter: blur(4px);
+        }
+        .tijus-popup-content {
+            background: #fff;
+            max-width: 600px;
+            width: 90%;
+            border-radius: 20px;
+            position: relative;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            animation: tijusPopupIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes tijusPopupIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .tijus-popup-close {
+            position: absolute;
+            top: 20px; right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .tijus-popup-close:hover { color: #333; }
+        .tijus-popup-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .tijus-popup-body {
+            font-family: inherit;
+            color: #444;
+            line-height: 1.6;
+        }
+        .tijus-popup-body h2 { margin-top: 0; font-weight: 800; }
+    </style>
+
+    <div class="tijus-popup-overlay" id="tijusPopup">
+        <div class="tijus-popup-content">
+            <span class="tijus-popup-close" id="tijusPopupClose">&times;</span>
+            <?php if ( $thumb ) : ?>
+                <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
+            <?php endif; ?>
+            <div class="tijus-popup-body">
+                <h2><?php echo esc_html( $popup->post_title ); ?></h2>
+                <?php echo $content; ?>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var delay = <?php echo intval( $delay ) * 1000; ?>;
+            var popup = document.getElementById('tijusPopup');
+            var close = document.getElementById('tijusPopupClose');
+
+            setTimeout(function() {
+                // Check if already shown this session if needed, but for now just show.
+                if ( ! sessionStorage.getItem('tijus_popup_shown_<?php echo $popup->ID; ?>') ) {
+                    popup.style.display = 'flex';
+                }
+            }, delay);
+
+            close.onclick = function() {
+                popup.style.display = 'none';
+                sessionStorage.setItem('tijus_popup_shown_<?php echo $popup->ID; ?>', 'true');
+            };
+
+            popup.onclick = function(e) {
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                    sessionStorage.setItem('tijus_popup_shown_<?php echo $popup->ID; ?>', 'true');
+                }
+            };
+        })();
+    </script>
+    <?php
+}
+add_action( 'wp_footer', 'tijus_inject_popup' );
