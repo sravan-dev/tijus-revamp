@@ -25761,11 +25761,15 @@ img {
 .widget-information .info-list ul li {
   border-bottom: 1px solid #d1e6d9;
   padding: 15px 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 5px;
 }
 .widget-information .info-list ul li i {
   color: var(--bs-primary);
-  margin-right: 3px;
   font-size: 16px;
+  flex-shrink: 0;
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .widget-information .info-list ul li i {
@@ -25776,6 +25780,8 @@ img {
   color: var(--bs-dark);
   font-size: 16px;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .widget-information .info-list ul li strong {
@@ -25784,10 +25790,10 @@ img {
 }
 .widget-information .info-list ul li span {
   color: #52565b;
-  display: block;
-  float: right;
   font-size: 16px;
   font-weight: 400;
+  margin-left: auto;
+  text-align: right;
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .widget-information .info-list ul li span {
