@@ -261,21 +261,36 @@ function tijus_inject_popup() {
             color: #333;
             line-height: 1.7;
         }
-        .tijus-popup-body > *:first-child { margin-top: 0; }
-        .tijus-popup-body > *:last-child { margin-bottom: 0; }
+        .tijus-popup-body h2.popup-title { 
+            margin-top: 0; 
+            font-weight: 800; 
+            font-size: 32px; 
+            color: #000;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-align: center;
+        }
+        .tijus-popup-image {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: block;
+        }
     </style>
 
     <div class="tijus-popup-overlay" id="tijusPopup">
         <div class="tijus-popup-content">
             <span class="tijus-popup-close" id="tijusPopupClose">&times;</span>
             <div class="tijus-popup-inner">
-                <?php if ( $thumb ) : ?>
-                    <div class="tijus-popup-image-wrap">
-                        <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
-                    </div>
-                <?php endif; ?>
                 <div class="tijus-popup-body">
-                    <?php echo $content; ?>
+                    <h2 class="popup-title"><?php echo esc_html( $popup->post_title ); ?></h2>
+                    <div class="popup-text-content">
+                        <?php echo $content; ?>
+                    </div>
+                    <?php if ( $thumb ) : ?>
+                        <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
