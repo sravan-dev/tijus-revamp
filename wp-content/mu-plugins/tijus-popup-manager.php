@@ -238,10 +238,11 @@ function tijus_inject_popup() {
         .tijus-popup-close:hover { transform: rotate(90deg); background: #f0f0f0; }
         
         .tijus-popup-inner {
-            padding: 40px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #FFC988 #f0f0f0;
+            display: flex;
+            flex-direction: column;
         }
         .tijus-popup-inner::-webkit-scrollbar { width: 6px; }
         .tijus-popup-inner::-webkit-scrollbar-track { background: #f0f0f0; }
@@ -250,23 +251,18 @@ function tijus_inject_popup() {
         .tijus-popup-image {
             width: 100%;
             height: auto;
-            border-radius: 12px;
-            margin-bottom: 25px;
+            border-radius: 0;
             display: block;
+            margin: 0;
         }
         .tijus-popup-body {
+            padding: 40px;
             font-family: "Montserrat", sans-serif;
             color: #333;
             line-height: 1.7;
         }
-        .tijus-popup-body h2 { 
-            margin-top: 0; 
-            font-weight: 800; 
-            font-size: 28px; 
-            color: #000;
-            margin-bottom: 15px;
-            line-height: 1.2;
-        }
+        .tijus-popup-body > *:first-child { margin-top: 0; }
+        .tijus-popup-body > *:last-child { margin-bottom: 0; }
     </style>
 
     <div class="tijus-popup-overlay" id="tijusPopup">
@@ -274,10 +270,11 @@ function tijus_inject_popup() {
             <span class="tijus-popup-close" id="tijusPopupClose">&times;</span>
             <div class="tijus-popup-inner">
                 <?php if ( $thumb ) : ?>
-                    <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
+                    <div class="tijus-popup-image-wrap">
+                        <img src="<?php echo esc_url( $thumb ); ?>" class="tijus-popup-image" />
+                    </div>
                 <?php endif; ?>
                 <div class="tijus-popup-body">
-                    <h2><?php echo esc_html( $popup->post_title ); ?></h2>
                     <?php echo $content; ?>
                 </div>
             </div>
