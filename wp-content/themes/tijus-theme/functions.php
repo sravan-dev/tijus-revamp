@@ -591,9 +591,25 @@ function tijus_render_course_meta_box( $post ) {
 
 	if ( empty( $video_type ) ) $video_type = 'youtube';
 
+	$course_image = get_post_meta( $post->ID, '_course_thumbnail_url', true );
+
 	wp_enqueue_media();
 	?>
 	<table class="form-table">
+		<tr>
+			<th><label>Course Image</label></th>
+			<td>
+				<div id="course_image_preview" style="margin-bottom: 10px;">
+					<?php if ( $course_image ) : ?>
+						<img src="<?php echo esc_url( $course_image ); ?>" style="max-width: 300px; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+					<?php endif; ?>
+				</div>
+				<input type="hidden" name="course_image_url" id="course_image_url" value="<?php echo esc_attr( $course_image ); ?>" />
+				<button type="button" class="button" id="upload_course_image_btn">Select/Upload Image</button>
+				<button type="button" class="button" id="remove_course_image_btn" <?php echo $course_image ? '' : 'style="display:none;"'; ?>>Remove Image</button>
+				<p class="description">This image is displayed as the course banner on the course page.</p>
+			</td>
+		</tr>
 		<tr>
 			<th><label>Preview Video</label></th>
 			<td>
@@ -747,6 +763,32 @@ function tijus_render_course_meta_box( $post ) {
 	</table>
 	<script>
 		jQuery(document).ready(function($) {
+			// Course image uploader
+			var courseImageUploader;
+			$('#upload_course_image_btn').on('click', function(e) {
+				e.preventDefault();
+				if (courseImageUploader) { courseImageUploader.open(); return; }
+				courseImageUploader = wp.media({
+					title: 'Select Course Image',
+					button: { text: 'Use this image' },
+					library: { type: 'image' },
+					multiple: false
+				});
+				courseImageUploader.on('select', function() {
+					var attachment = courseImageUploader.state().get('selection').first().toJSON();
+					$('#course_image_url').val(attachment.url);
+					$('#course_image_preview').html('<img src="' + attachment.url + '" style="max-width: 300px; height: auto; border: 1px solid #ccc; border-radius: 4px;" />');
+					$('#remove_course_image_btn').show();
+				});
+				courseImageUploader.open();
+			});
+			$('#remove_course_image_btn').on('click', function(e) {
+				e.preventDefault();
+				$('#course_image_url').val('');
+				$('#course_image_preview').empty();
+				$(this).hide();
+			});
+
 			// Video type toggle
 			$('input[name="course_video_type"]').on('change', function() {
 				if ($(this).val() === 'youtube') {
@@ -861,6 +903,16 @@ function tijus_save_course_meta_data( $post_id ) {
 	foreach ( $fields as $field => $meta_key ) {
 		if ( isset( $_POST[ $field ] ) ) {
 			update_post_meta( $post_id, $meta_key, sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) );
+		}
+	}
+
+	// Save course image
+	if ( isset( $_POST['course_image_url'] ) ) {
+		$img_url = esc_url_raw( $_POST['course_image_url'] );
+		if ( ! empty( $img_url ) ) {
+			update_post_meta( $post_id, '_course_thumbnail_url', $img_url );
+		} else {
+			delete_post_meta( $post_id, '_course_thumbnail_url' );
 		}
 	}
 
