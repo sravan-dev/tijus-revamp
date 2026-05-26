@@ -3,7 +3,7 @@
 Plugin Name: Tijus Dashboard Stats
 Description: Displays custom stat cards for Posts, Courses, Customers, and Careers on the admin dashboard.
 Author: Gemini CLI
-Version: 1.0
+Version: 1.1
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -45,7 +45,7 @@ function tijus_render_dashboard_stats_widget() {
         array(
             'count' => $post_count,
             'label' => 'Posts',
-            'color' => '#007bff',
+            'color' => '#17a2b8',
             'icon'  => 'dashicons-admin-post',
             'link'  => admin_url( 'edit.php' )
         ),
@@ -74,13 +74,20 @@ function tijus_render_dashboard_stats_widget() {
     );
     ?>
     <style>
+        #tijus_dashboard_stats { border: none; background: transparent; box-shadow: none; }
+        #tijus_dashboard_stats .postbox-header { display: none; }
         #tijus_dashboard_stats .inside { margin: 0; padding: 0; }
         .tijus-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
-            padding: 20px;
-            background: #f0f0f1;
+            padding: 0 0 20px 0;
+        }
+        @media (max-width: 1200px) {
+            .tijus-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .tijus-stats-grid { grid-template-columns: 1fr; }
         }
         .tijus-stat-card {
             border-radius: 4px;
@@ -90,8 +97,9 @@ function tijus_render_dashboard_stats_widget() {
             flex-direction: column;
             overflow: hidden;
             box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+            min-height: 140px;
         }
-        .tijus-stat-card .inner { padding: 20px; }
+        .tijus-stat-card .inner { padding: 20px; z-index: 2; }
         .tijus-stat-card h3 {
             font-size: 38px;
             font-weight: 700;
@@ -109,7 +117,7 @@ function tijus_render_dashboard_stats_widget() {
             position: absolute;
             top: 15px;
             right: 15px;
-            z-index: 0;
+            z-index: 1;
         }
         .tijus-stat-card .icon .dashicons {
             font-size: 70px;
@@ -122,11 +130,12 @@ function tijus_render_dashboard_stats_widget() {
             background-color: rgba(0,0,0,.1);
             color: rgba(255,255,255,.8);
             display: block;
-            padding: 3px 0;
+            padding: 5px 0;
             position: relative;
             text-align: center;
             text-decoration: none;
             z-index: 10;
+            margin-top: auto;
         }
         .tijus-stat-card .small-box-footer:hover {
             background-color: rgba(0,0,0,.15);
@@ -164,18 +173,23 @@ function tijus_render_dashboard_stats_widget() {
 }
 
 /**
- * Force Dashboard Widget to full width.
+ * Force Dashboard Widget to full width and hide title.
  */
 function tijus_dashboard_widget_full_width() {
     ?>
     <style>
-        #tijus_dashboard_stats { width: 100% !important; }
-        .postbox-container { width: 100% !important; } /* This might affect other widgets, careful */
-        /* More targetted approach */
+        #tijus_dashboard_stats { width: 100% !important; margin-right: 0 !important; }
         #dashboard-widgets .postbox-container { width: 100% !important; }
-        #dashboard-widgets #postbox-container-2, #dashboard-widgets #postbox-container-3, #dashboard-widgets #postbox-container-4 { display: none; }
-        /* Actually just let it be responsive in the normal column if it fits */
+        #dashboard-widgets #postbox-container-2, 
+        #dashboard-widgets #postbox-container-3, 
+        #dashboard-widgets #postbox-container-4 { width: 100% !important; }
+        
+        /* Layout Fix for WP Dashboard */
+        #wpbody-content #dashboard-widgets.columns-1 .postbox-container,
+        #wpbody-content #dashboard-widgets.columns-2 .postbox-container,
+        #wpbody-content #dashboard-widgets.columns-3 .postbox-container,
+        #wpbody-content #dashboard-widgets.columns-4 .postbox-container { width: 100% !important; }
     </style>
     <?php
 }
-// add_action( 'admin_head-index.php', 'tijus_dashboard_widget_full_width' );
+add_action( 'admin_head-index.php', 'tijus_dashboard_widget_full_width' );
