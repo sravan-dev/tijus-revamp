@@ -296,7 +296,7 @@ add_action( 'login_footer', function() {
 
         // Add placeholders
         var userLogin = document.getElementById('user_login');
-        if (userLogin) userLogin.placeholder = 'Enter Email / Phone No';
+        if (userLogin) userLogin.placeholder = 'Enter Email';
         
         var userPass = document.getElementById('user_pass');
         if (userPass) userPass.placeholder = 'Passcode';
