@@ -259,8 +259,7 @@ add_action( 'login_enqueue_scripts', function() {
 add_filter( 'login_message', function( $message ) {
     return '
     <div class="login-header-custom">
-        <img src="/wp-content/uploads/2026/04/logo.webp" alt="Logo" style="max-width: 200px; margin-bottom: 20px;">
-        <p>Hey, Enter your details to get sign in to your account</p>
+        <img src="/wp-content/uploads/2026/04/logo.webp" alt="Logo" style="max-width: 140px; margin-bottom: 20px;">
     </div>' . $message;
 } );
 
