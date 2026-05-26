@@ -32,12 +32,8 @@
     <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/plugins/jqvmap.min.css"> -->
 
     <!-- Main Style CSS -->
-    <!-- <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.css"> -->
-
-
-    <!--====== Use the minified version files listed below for better performance and remove the files listed above ======-->
     <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/vendor/plugins.min.css">
-    <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.min.css">
+    <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.css">
 
 <?php wp_head(); ?>
 </head>
