@@ -45,15 +45,15 @@ function tijus_render_dashboard_stats_widget() {
         array(
             'count' => $post_count,
             'label' => 'Posts',
-            'color' => '#17a2b8',
-            'icon'  => 'dashicons-pin',
+            'color' => '#007bff',
+            'icon'  => 'dashicons-admin-post',
             'link'  => admin_url( 'edit.php' )
         ),
         array(
             'count' => $course_count,
             'label' => 'Courses',
             'color' => '#28a745',
-            'icon'  => 'dashicons-education',
+            'icon'  => 'dashicons-welcome-learn-more',
             'link'  => admin_url( 'edit.php?post_type=course' )
         ),
         array(
@@ -61,8 +61,7 @@ function tijus_render_dashboard_stats_widget() {
             'label' => 'Customers',
             'color' => '#ffc107',
             'icon'  => 'dashicons-groups',
-            'link'  => admin_url( 'admin.php?page=tijus-customers' ),
-            'text_color' => '#fff'
+            'link'  => admin_url( 'admin.php?page=tijus-customers' )
         ),
         array(
             'count' => $career_count,
@@ -80,7 +79,7 @@ function tijus_render_dashboard_stats_widget() {
         .tijus-stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
+            gap: 20px;
             padding: 0 0 20px 0;
         }
         @media (max-width: 1200px) {
@@ -90,73 +89,81 @@ function tijus_render_dashboard_stats_widget() {
             .tijus-stats-grid { grid-template-columns: 1fr; }
         }
         .tijus-stat-card {
-            border-radius: 5px;
+            border-radius: 4px;
             color: #fff !important;
             position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
-            min-height: 130px;
+            min-height: 0;
+            transition: transform .2s;
         }
-        .tijus-stat-card .inner { padding: 15px 20px; z-index: 2; }
+        .tijus-stat-card:hover { transform: translateY(-2px); }
+        .tijus-stat-card:hover .icon .dashicons { font-size: 80px; width: 80px; height: 80px; }
+        .tijus-stat-card .inner {
+            padding: 12px 15px;
+            z-index: 2;
+            flex: 1;
+        }
         .tijus-stat-card h3 {
-            font-size: 42px;
+            font-size: 38px;
             font-weight: 700;
-            margin: 0 0 5px 0;
+            margin: 0 0 2px 0;
             white-space: nowrap;
             padding: 0;
             color: #fff !important;
-            line-height: 1.2;
+            line-height: 1.1;
         }
         .tijus-stat-card p {
-            font-size: 18px;
+            font-size: 16px;
             margin: 0;
-            font-weight: 500;
-            color: rgba(255,255,255,0.8);
+            font-weight: 400;
+            color: #fff !important;
         }
         .tijus-stat-card .icon {
             position: absolute;
-            top: 5px;
+            top: 10px;
             right: 15px;
             z-index: 1;
             transition: all .3s linear;
         }
         .tijus-stat-card .icon .dashicons {
-            font-size: 80px;
-            width: 80px;
-            height: 80px;
-            opacity: 0.2;
+            font-size: 70px;
+            width: 70px;
+            height: 70px;
+            opacity: 0.15;
             color: #000;
+            transition: all .3s linear;
         }
-        /* Specific Icon Rotations to match screenshot */
-        .tijus-stat-card:nth-child(1) .icon { transform: rotate(30deg); top: 15px; }
-        
         .tijus-stat-card .small-box-footer {
             background-color: rgba(0,0,0,.1);
-            color: rgba(255,255,255,.8);
+            color: rgba(255,255,255,.8) !important;
             display: block;
-            padding: 4px 0;
+            padding: 5px 0;
             position: relative;
             text-align: center;
-            text-decoration: none;
+            text-decoration: none !important;
             z-index: 10;
-            margin-top: auto;
-            font-size: 14px;
+            font-size: 13px;
+            transition: background .2s;
         }
         .tijus-stat-card .small-box-footer:hover {
             background-color: rgba(0,0,0,.15);
-            color: #fff;
+            color: #fff !important;
+        }
+        .tijus-stat-card .small-box-footer .dashicons {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-left: 3px;
         }
     </style>
 
     <div class="tijus-stats-grid">
-        <?php foreach ( $stats as $stat ) : 
-            $text_class = isset($stat['text_color']) ? 'text-dark' : '';
-            $color_style = 'background-color: ' . $stat['color'] . ' !important;';
-            if (isset($stat['text_color'])) $color_style .= ' color: ' . $stat['text_color'] . ' !important;';
-        ?>
-            <div class="tijus-stat-card <?php echo $text_class; ?>" style="<?php echo $color_style; ?>">
+        <?php foreach ( $stats as $stat ) : ?>
+            <div class="tijus-stat-card" style="background-color: <?php echo esc_attr( $stat['color'] ); ?> !important;">
                 <div class="inner">
                     <h3><?php echo number_format_i18n( $stat['count'] ); ?></h3>
                     <p><?php echo esc_html( $stat['label'] ); ?></p>
@@ -165,7 +172,7 @@ function tijus_render_dashboard_stats_widget() {
                     <span class="dashicons <?php echo esc_attr( $stat['icon'] ); ?>"></span>
                 </div>
                 <a href="<?php echo esc_url( $stat['link'] ); ?>" class="small-box-footer">
-                    More info <span class="dashicons dashicons-arrow-right-alt2" style="font-size: 14px; vertical-align: middle;"></span>
+                    More info <span class="dashicons dashicons-admin-links"></span>
                 </a>
             </div>
         <?php endforeach; ?>
