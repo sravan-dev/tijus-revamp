@@ -122,22 +122,16 @@
                     ];
                 }
                 ?>
-                <div class="courses-tabs-menu courses-active">
-                    <div class="swiper-container">
-                        <ul class="swiper-wrapper nav">
-                            <?php foreach ( $categories as $index => $category ) : ?>
-                                <li class="swiper-slide">
-                                    <button class="<?php echo ( $index === 0 ) ? 'active' : ''; ?>" data-bs-toggle="tab" data-bs-target="#tabs-<?php echo esc_attr( $category->slug ); ?>">
-                                        <?php echo esc_html( $category->name ); ?>
-                                    </button>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-
-                    <!-- Add Pagination -->
-                    <div class="swiper-button-next"><i class="icofont-rounded-right"></i></div>
-                    <div class="swiper-button-prev"><i class="icofont-rounded-left"></i></div>
+                <div class="courses-tabs-menu">
+                    <ul class="nav" style="display:flex; gap:12px; list-style:none; margin:0; padding:0;">
+                        <?php foreach ( $categories as $index => $category ) : ?>
+                            <li style="flex:1;">
+                                <button class="<?php echo ( $index === 0 ) ? 'active' : ''; ?>" data-bs-toggle="tab" data-bs-target="#tabs-<?php echo esc_attr( $category->slug ); ?>">
+                                    <?php echo esc_html( $category->name ); ?>
+                                </button>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
                 <!-- All Courses Tabs Menu End -->
 
