@@ -184,7 +184,6 @@ while ( have_posts() ) :
                                             <!-- Tab Description Start -->
                                             <div class="tab-description">
                                                 <div class="description-wrapper">
-                                                    <h3 class="tab-title">Description:</h3>
                                                     <?php the_content(); ?>
                                                 </div>
                                             </div>
