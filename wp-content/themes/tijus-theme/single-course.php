@@ -276,7 +276,7 @@ while ( have_posts() ) :
                                         <div class="tab-pane fade" id="faqs">
 
                                             <!-- Tab FAQs Start -->
-                                            <div class="tab-faqs">
+                                            <div class="tab-faqs" style="margin-top: 30px;">
                                                 <?php
                                                 $faqs = get_post_meta( get_the_ID(), '_course_faqs', true );
                                                 if ( is_array( $faqs ) && ! empty( $faqs ) ) {
