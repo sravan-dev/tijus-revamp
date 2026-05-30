@@ -193,7 +193,7 @@ while ( have_posts() ) :
                                         <div class="tab-pane fade" id="testimonials">
 
                                             <!-- Tab Testimonials Start -->
-                                            <div class="tab-testimonials">
+                                            <div class="tab-testimonials" style="margin-top: 30px;">
                                                 <h3 class="tab-title">Student Testimonials:</h3>
 
                                                 <?php
